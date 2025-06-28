@@ -2,6 +2,29 @@ import { defineConfig, loadEnv } from "vite";
 import { resolve } from "path";
 import react from "@vitejs/plugin-react";
 import forwardToTrailingSlashPlugin from "./forward-to-trailing-slash-plugin";
+import { copyFileSync, mkdirSync, readdirSync, statSync } from "fs";
+import { join } from "path";
+
+// Plugin to copy img folder to dist
+const copyImgPlugin = () => ({
+  name: 'copy-img',
+  writeBundle() {
+    const copyRecursiveSync = (src, dest) => {
+      const exists = statSync(src, { throwIfNoEntry: false });
+      const stats = exists && statSync(src);
+      const isDirectory = exists && stats.isDirectory();
+      if (isDirectory) {
+        mkdirSync(dest, { recursive: true });
+        readdirSync(src).forEach(childItemName => {
+          copyRecursiveSync(join(src, childItemName), join(dest, childItemName));
+        });
+      } else {
+        copyFileSync(src, dest);
+      }
+    };
+    copyRecursiveSync('./img', './dist/img');
+  }
+});
 
 const build = {
   rollupOptions: {
@@ -24,6 +47,7 @@ export default defineConfig(({ command, mode }) => {
     plugins: [
       forwardToTrailingSlashPlugin(Object.keys(build.rollupOptions.input)),
       react(),
+      copyImgPlugin(),
     ],
     base: env.VITE_BASE ?? "/",
     appType: "mpa",
