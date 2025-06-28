@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
     <meta
       name="Description"
       content="HeatSync Labs. Arizona's greatest hackerspace."
@@ -27,7 +28,7 @@
       }
 
       #wrapper {
-        width: 811px;
+        width: 85%;
         margin: 0 auto;
       }
 
@@ -46,7 +47,6 @@
         border: 1px solid #ddd;
         padding: 4px;
         margin: 0 0 0 30px;
-        width: 320px;
         display: inline-block;
       }
 
@@ -76,6 +76,13 @@
       h4 {
         font-size: 18px;
       }
+
+      canvas {
+        display: block;
+        margin: 0 auto;
+        width: 100%;
+        height: 100%;
+      }
     </style>
     <meta name="theme-color" content="#f99b0c" />
   </head>
@@ -89,8 +96,7 @@
       <div id="content">
         <h2>HeatSync Labs Live Webcams</h2>
         <p>
-          See if there are people in the lab! <br />The camera views refresh at
-          least every 10 seconds, though you may not be able to tell if
+          See if there are people in the lab! <br />The camera views outlines of people in real time, though you may not be able to tell if
           nothing's moving. <br />
           If the cameras are broken, please email
           operations at heatsynclabs dot org and mention "web cams" in the subject line.
@@ -103,59 +109,27 @@
         </p>
 
         <div class="caption">
-          <a
-            id="lsAnchor1"
-            href="https://live.heatsynclabs.org/snapshot.php?camera=1"
-          >
-            <img
-              id="livestream1"
-              src="https://live.heatsynclabs.org/snapshot.php?camera=1"
-              width="320"
-              height="240"
-            />
-          </a>
+          <canvas
+            id="livestream1"
+          />
         </div>
 
         <div class="caption">
-          <a
-            id="lsAnchor2"
-            href="https://live.heatsynclabs.org/snapshot.php?camera=2"
-          >
-            <img
-              id="livestream2"
-              src="https://live.heatsynclabs.org/snapshot.php?camera=2"
-              width="320"
-              height="240"
-            />
-          </a>
+          <canvas
+            id="livestream2"
+          />
         </div>
 
         <div class="caption">
-          <a
-            id="lsAnchor3"
-            href="https://live.heatsynclabs.org/snapshot.php?camera=3"
-          >
-            <img
-              id="livestream3"
-              src="https://live.heatsynclabs.org/snapshot.php?camera=3"
-              width="320"
-              height="240"
-            />
-          </a>
+          <canvas
+            id="livestream3"
+          />
         </div>
 
         <div class="caption">
-          <a
-            id="lsAnchor4"
-            href="https://live.heatsynclabs.org/snapshot.php?camera=4"
-          >
-            <img
-              id="livestream4"
-              src="https://live.heatsynclabs.org/snapshot.php?camera=4"
-              width="320"
-              height="240"
-            />
-          </a>
+          <canvas
+            id="livestream4"
+          />
         </div>
         <ul>
           <li>
@@ -169,21 +143,132 @@
     </div>
     <script type="module" src="/src/scripts/doors.js"></script>
     <script type="text/javascript">
-      function refresh() {
-        for (let i = 1; i <= 4; i++) {
-          const url = `https://live.heatsynclabs.org/snapshot.php?camera=${i}&time=${Date.now()}`;
-          const img = new Image();
-          img.onload = () => {
-            document.getElementById("livestream" + i).src = url;
-            document.getElementById("lsAnchor" + i).href = url;
-          };
-          img.src = url;
+      const socket = io('https://hsl-cam-reflector-c1bb8fa26eef.herokuapp.com/', {
+        transports: ['websocket'],
+      });
+      const cams = {
+        CAM1: {
+          image: {
+            height: 720,
+            width: 1280,
+          },
+          predictions: [],
+        },
+        CAM2: {
+          image: {
+            height: 720,
+            width: 1280,
+          },
+          predictions: [],
+        },
+        CAM3: {
+          image: {
+            height: 600,
+            width: 800,
+          },
+          predictions: [],
+        },
+        CAM4: {
+          image: {
+            height: 360,
+            width: 640,
+          },
+          predictions: [],
+        },
+      };
+
+      socket.on('connect', () => {
+        console.log('Connected to the camdata server');
+      });
+      socket.on('disconnect', () => {
+        console.log('Disconnected from the camdata server');
+      });
+      socket.on('camResults', (data) => {
+        // console.log('Received camdata:', data);
+        if (data.CAM1) {
+          cams.CAM1 = data.CAM1;
         }
+        if (data.CAM2) {
+          cams.CAM2 = data.CAM2;
+        }
+        if (data.CAM3) {
+          cams.CAM3 = data.CAM3;
+        }
+        if (data.CAM4) {
+          cams.CAM4 = data.CAM4;
+        }
+      });
+
+      const images = Array(4).fill(0).map((c, idx) => {
+        const img = new Image();
+        img.src = `/img/backgrounds/snapshot${idx + 1}.jpg`;
+        img.onload = () => {
+          console.log(`img ${idx + 1} loaded`);
+        };
+        return img;
+      });
+
+      const canvases = images.map((c, idx) => {
+        return document.getElementById(`livestream${idx + 1}`);
+      });
+
+      // offscreen canvases for effects
+      const mCanvases = canvases.map(c => {
+        return document.createElement("canvas");
+      });
+
+      function animate() {
+        canvases.forEach((c, idx) => {
+          c.width = cams[`CAM${idx + 1}`].image.width;
+          c.height = cams[`CAM${idx + 1}`].image.height;
+          const area = c.width * c.height;
+          const ctx = c.getContext("2d");
+          ctx.drawImage(images[idx], 0, 0, c.width, c.height);
+          const camData = cams[`CAM${idx + 1}`];
+
+          const people = camData.predictions.filter(p => {
+            const [x, y, w, h] = p.bbox;
+            const pArea = w * h;
+            return (p.class === 'person') && (p.score > 0.6) && ((pArea / area) < 0.2);
+          });
+          const other = camData.predictions.filter(p => {
+            const [x, y, w, h] = p.bbox;
+            const pArea = w * h;
+            return (p.class !== 'person') && (p.score > 0.6) && ((pArea / area) < 0.2);
+          });
+
+
+          other.forEach(p => {
+            const [x, y, w, h] = p.bbox;
+            ctx.fillStyle ='blue';
+            ctx.fillRect(x, y, w, h);
+            const fontSize = h * 0.2;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillStyle = 'white';
+            ctx.fillText(p.class, x, y + fontSize);
+            ctx.fillText((p.score * 100).toFixed(1) + '%', x, y + (fontSize * 2.1));
+          });
+
+          people.forEach(p => {
+            const [x, y, w, h] = p.bbox;
+            ctx.fillStyle = 'black';
+            ctx.fillRect(x, y, w, h);
+            ctx.fillStyle = 'white';
+            const fontSize = h * 0.1;
+            ctx.font = `${fontSize}px Arial`;
+            ctx.fillText(p.class, x, y + fontSize);
+            ctx.fillText((p.score * 100).toFixed(1) + '%', x, y + (fontSize * 2.1));
+          });
+
+        });
+      
+        requestAnimationFrame(animate);
       }
 
+      requestAnimationFrame(animate);
+      
+      
       document.addEventListener("DOMContentLoaded", () => {
-        setInterval(refresh, 10000);
-
         doors().then(console.log).catch(console.error);
       });
     </script>
