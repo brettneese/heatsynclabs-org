@@ -2,6 +2,7 @@
 <html>
   <head>
     <link rel="manifest" href="manifest.json" />
+    <script src="https://unpkg.com/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
     <meta
       name="Description"
       content="HeatSync Labs. Arizona's greatest hackerspace."
@@ -143,6 +144,9 @@
     </div>
     <script type="module" src="/src/scripts/doors.js"></script>
     <script type="text/javascript">
+      const socket = io('https://hsl-cam-reflector-c1bb8fa26eef.herokuapp.com/', {
+        transports: ['websocket'],
+      });
       const cams = {
         CAM1: {
           image: {
@@ -173,27 +177,28 @@
           predictions: [],
         },
       };
-      async function refresh() {
-        try {
-          const response = await fetch('https://hsl-cam-data-83515ce7ac94.herokuapp.com/camdata');
-          const data = await response.json();
-          console.log(data);
-          if (data.CAM1) {
-            cams.CAM1 = data.CAM1;
-          }
-          if (data.CAM2) {
-            cams.CAM2 = data.CAM2;
-          }
-          if (data.CAM3) {
-            cams.CAM3 = data.CAM3;
-          }
-          if (data.CAM4) {
-            cams.CAM4 = data.CAM4;
-          }
-        } catch (e) {
-          console.error(e);
+
+      socket.on('connect', () => {
+        console.log('Connected to the camdata server');
+      });
+      socket.on('disconnect', () => {
+        console.log('Disconnected from the camdata server');
+      });
+      socket.on('camResults', (data) => {
+        // console.log('Received camdata:', data);
+        if (data.CAM1) {
+          cams.CAM1 = data.CAM1;
         }
-      }
+        if (data.CAM2) {
+          cams.CAM2 = data.CAM2;
+        }
+        if (data.CAM3) {
+          cams.CAM3 = data.CAM3;
+        }
+        if (data.CAM4) {
+          cams.CAM4 = data.CAM4;
+        }
+      });
 
       const images = Array(4).fill(0).map((c, idx) => {
         const img = new Image();
@@ -265,8 +270,6 @@
       
       
       document.addEventListener("DOMContentLoaded", () => {
-        setInterval(refresh, 500);
-
         doors().then(console.log).catch(console.error);
       });
     </script>
