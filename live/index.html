@@ -217,14 +217,107 @@
         return document.createElement("canvas");
       });
 
+      const rainCanvas = document.createElement("canvas");
+      rainCanvas.width = 1920;
+      rainCanvas.height = 1080;
+      class RainChar {
+        constructor(font, charSize, chars, bg, fg) {
+          // Defining the parameters
+          this.font = font;
+          this.charSize = charSize;
+          this.chars = chars;
+          this.bg = bg;
+          this.fg = fg;
+
+          // Setting up the canvas
+          const canvas = rainCanvas;
+          this.context = canvas.getContext("2d");
+          this.size = [canvas.width, canvas.height];
+          canvas.width = this.size[0];
+          canvas.height = this.size[1];
+
+          this.context.fillStyle = this.bg;
+          this.context.fillRect(0, 0, ...this.size);
+
+          // Creating the particles array
+          this.particles = [];
+          const particleCount =
+            (this.size[0] * this.size[1]) / this.charSize ** 2 / 10;
+
+          for (let i = 0; i < particleCount; i++) {
+            this.particles.push(this.newParticle());
+          }
+        }
+
+        newParticle() {
+          return {
+            x: Math.random() * this.size[0],
+            y: -Math.random() * this.size[1] * 2,
+            size: Math.floor(
+              Math.random() * (this.charSize * 2 - this.charSize / 2) +
+                this.charSize / 2
+            )
+          };
+        }
+
+        drawParticles() {
+          this.context.fillStyle = this.fg;
+          this.particles.forEach((particle) => {
+            this.context.font = `${particle.size}px ${this.font}`;
+            const randomChar = this.chars[
+              Math.floor(Math.random() * this.chars.length)
+            ];
+            this.context.fillText(randomChar, particle.x, particle.y);
+          });
+        }
+
+        updateParticles() {
+          this.particles.forEach((particle) => {
+            if (particle.y > this.size[1]) {
+              Object.assign(particle, this.newParticle());
+            } else {
+              particle.y += particle.size;
+            }
+          });
+        }
+
+        clearCanvas() {
+          this.context.globalAlpha = 0.25;
+          this.context.fillStyle = this.bg;
+          this.context.fillRect(0, 0, ...this.size);
+          this.context.globalAlpha = 1;
+        }
+
+        play() {
+          this.clearCanvas();
+          this.drawParticles();
+          this.updateParticles();
+          setTimeout(() => {
+            this.play();
+          }, 65);
+        }
+      }
+
+      const chars = "ABCDEFGHアイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンガギグゲゴザジズゼゾダㄥㄖ尺乇爪　乇卩丂ㄩ爪　ᎶㄖㄖᎶㄥ乇　ﾌ卂卩卂几乇丂乇　ㄒ乇乂ㄒヂヅデドバビブベボパピプペポあいうえおくけこさしすせそたちつてとなにぬねのはひふへむめもやゆよらりるれろわをん一二三四五六七八九十零IJKLMNOPRSTUVWXYZabcdefghijklmonpqrstuvwxyz";
+      const rain = new RainChar("monospace", 8, chars, "black", "lime");
+      rain.play();
+
       function animate() {
         canvases.forEach((c, idx) => {
           if (!cams[`CAM${idx + 1}`]?.image) {
             console.log(`img ${idx + 1} not loaded`);
             return;
           }
-          c.width = cams[`CAM${idx + 1}`].image.width;
-          c.height = cams[`CAM${idx + 1}`].image.height;
+          const newWidth = cams[`CAM${idx + 1}`].image.width;
+          const newHeight = cams[`CAM${idx + 1}`].image.height;
+          if (newWidth === 0 || newHeight === 0) {
+            console.log(`img ${idx + 1} has zero dimensions`);
+            return;
+          }
+
+          c.width = newWidth;
+          c.height = newHeight;
+
           const area = c.width * c.height;
           const ctx = c.getContext("2d");
           ctx.drawImage(images[idx], 0, 0, c.width, c.height);
@@ -235,31 +328,21 @@
             const pArea = w * h;
             return (p.class === 'person') && (p.score > 0.6) && ((pArea / area) < 0.2);
           });
-          const other = camData.predictions.filter(p => {
-            const [x, y, w, h] = p.bbox;
-            const pArea = w * h;
-            return (p.class !== 'person') && (p.score > 0.6) && ((pArea / area) < 0.2);
-          });
-
-
-          other.forEach(p => {
-            const [x, y, w, h] = p.bbox;
-            ctx.fillStyle ='blue';
-            ctx.fillRect(x, y, w, h);
-            const fontSize = h * 0.2;
-            ctx.font = `${fontSize}px Arial`;
-            ctx.fillStyle = 'white';
-            ctx.fillText(p.class, x, y + fontSize);
-            ctx.fillText((p.score * 100).toFixed(1) + '%', x, y + (fontSize * 2.1));
-          });
 
           people.forEach(p => {
             const [x, y, w, h] = p.bbox;
             ctx.strokeStyle = 'orange';
             ctx.lineWidth = 5;
             ctx.strokeRect(x, y, w, h);
-            ctx.fillStyle = 'black';
-            ctx.fillRect(x, y, w, h);
+            // ctx.fillStyle = 'black';
+            // ctx.fillRect(x, y, w, h);
+            // crop a section of the matrix rainCanvas to use the rectangle the same position as the person
+
+            ctx.drawImage(rainCanvas, 
+              x, y, w, h,
+              x, y, w, h
+            );
+
             ctx.fillStyle = 'white';
             const fontSize = h * 0.1;
             ctx.font = `${fontSize}px Arial`;
@@ -272,12 +355,12 @@
         requestAnimationFrame(animate);
       }
 
-      requestAnimationFrame(animate);
-      
+      animate();
       
       document.addEventListener("DOMContentLoaded", () => {
         doors().then(console.log).catch(console.error);
       });
+
     </script>
   </body>
 </html>
