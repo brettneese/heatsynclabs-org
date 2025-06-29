@@ -219,6 +219,10 @@
 
       function animate() {
         canvases.forEach((c, idx) => {
+          if (!cams[`CAM${idx + 1}`]?.image) {
+            console.log(`img ${idx + 1} not loaded`);
+            return;
+          }
           c.width = cams[`CAM${idx + 1}`].image.width;
           c.height = cams[`CAM${idx + 1}`].image.height;
           const area = c.width * c.height;
