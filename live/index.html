@@ -6,6 +6,7 @@
       name="Description"
       content="HeatSync Labs. Arizona's greatest hackerspace."
     />
+
     <style type="text/css">
       body {
         background-color: #2c2c29;
@@ -75,7 +76,6 @@
       h4 {
         font-size: 18px;
       }
-
       canvas {
         display: block;
         margin: 0 auto;
@@ -93,95 +93,7 @@
       </a>
 
       <div id="content">
-        <h2>HeatSync Labs Live Webcams</h2>
-        <p>
-          See if there are people in the lab! <br />The camera views outlines of people in real time, though you may not be able to tell if
-          nothing's moving. <br />
-          If the cameras are broken, please email
-          operations at heatsynclabs dot org and mention "web cams" in the subject line.
-        </p>
-        <p>
-          Nobody here? Check the
-          <a href="http://twitter.com/heatsyncstatus">HeatSyncStatus</a> feed.
-          See when the next event is scheduled at the
-          <a href="http://www.heatsynclabs.org">HeatSync Website</a>.
-        </p>
-
-        <div class="caption">
-          <canvas
-            id="livestream1"
-          />
-        </div>
-
-        <div class="caption">
-          <canvas
-            id="livestream2"
-          />
-        </div>
-
-        <div class="caption">
-          <canvas
-            id="livestream3"
-          />
-        </div>
-
-        <div class="caption">
-          <canvas
-            id="livestream4"
-          />
-        </div>
-        <ul>
-          <li>
-            doors currently:
-            <span id="door_status">
-              <i class="icon-spinner icon-spin"></i>
-            </span>
-          </li>
-        </ul>
-      </div>
+        <h2>Live cameras have been removed.</h2>
     </div>
-    <script src="https://unpkg.com/socket.io-client@4.8.1/dist/socket.io.min.js"></script>
-    <script type="module" src="/src/scripts/doors.js"></script>
-    <script type="module" src="/src/scripts/matrix.js"></script>
-    <script type="text/javascript">
-      document.addEventListener("DOMContentLoaded", () => {
-        doors().then(console.log).catch(console.error);
-
-        const cam1 = new MatrixCam({
-          name: 'CAM1',
-          width: 1280,
-          height: 720,
-          backroundImg: '/img/backgrounds/snapshot1.jpg',
-          canvas: document.getElementById('livestream1'),
-        });
-        const cam2 = new MatrixCam({
-          name: 'CAM2',
-          width: 1280,
-          height: 720,
-          backroundImg: '/img/backgrounds/snapshot2.jpg',
-          canvas: document.getElementById('livestream2'),
-        });
-        const cam3 = new MatrixCam({
-          name: 'CAM3',
-          width: 800,
-          height: 600,
-          backroundImg: '/img/backgrounds/snapshot3.jpg',
-          canvas: document.getElementById('livestream3'),
-        });
-        const cam4 = new MatrixCam({
-          name: 'CAM4',
-          width: 640,
-          height: 360,
-          backroundImg: '/img/backgrounds/snapshot4.jpg',
-          canvas: document.getElementById('livestream4'),
-        });
-
-        const cams = [cam1, cam2, cam3, cam4];
-
-        const matrix = new MatrixLauncher({ io, cams });
-        
-      });
-
-    </script>
   </body>
 </html>
