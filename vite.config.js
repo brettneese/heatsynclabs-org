@@ -36,6 +36,7 @@ const build = {
       register: resolve(__dirname, "register/index.html"),
       history: resolve(__dirname, "history/index.html"),
       fscalendar: resolve(__dirname, "fscalendar/index.html"),
+      "app-privacy-policy": resolve(__dirname, "app-privacy-policy.html"),
     },
   },
 };
