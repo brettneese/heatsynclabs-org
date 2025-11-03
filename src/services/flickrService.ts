@@ -10,12 +10,12 @@ export interface FlickrPhoto {
 }
 
 export class FlickrService {
-  private readonly FLICKR_API_URL = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=bec64c9c0f28889dc6e0c5ef7be3511f&user_id=60827818%40N07&tags=publish&format=rest'
+  private readonly FLICKR_API_URL = '/api/flickr'
 
   async getPhotos(limit: number = 20): Promise<FlickrPhoto[]> {
     try {
-      // Use our Netlify function to fetch the XML data
-      const response = await fetch(`/.netlify/functions/flickr-api?limit=${limit}`)
+      // Use our API endpoint to fetch the XML data
+      const response = await fetch(`${this.FLICKR_API_URL}?limit=${limit}`)
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`)
