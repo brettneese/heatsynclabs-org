@@ -93,7 +93,7 @@
   --transition-slow: 0.5s ease;
 
   /* Component Specific */
-  --header-height: 72px;
+  --header-height: 96px;
   --card-padding: var(--space-8);
   --button-height: 48px;
 }
