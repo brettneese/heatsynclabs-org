@@ -9,6 +9,9 @@
   --cream: #fefcfa;
   --accent-rust: #a85a3c;
   --accent-sage: #7a8b7f;
+  --off-white: #fcfcfc;
+  --success-green: #10b981;
+  --error-red: #ef4444;
 
   /* Shadows for material depth */
   --shadow-light: rgba(26, 25, 24, 0.08);
@@ -73,6 +76,7 @@
   --radius-md: 6px;
   --radius-lg: 8px;
   --radius-xl: 12px;
+  --radius-full: 9999px;
 
   /* Container Sizes */
   --container-sm: 640px;
@@ -93,7 +97,7 @@
   --transition-slow: 0.5s ease;
 
   /* Component Specific */
-  --header-height: 96px;
+  --header-height: 72px;
   --card-padding: var(--space-8);
   --button-height: 48px;
 }
