@@ -1,4 +1,5 @@
 import { format, isAfter, isBefore, addDays, subDays, startOfDay, startOfMonth, endOfMonth } from 'date-fns'
+import { config } from '../config'
 
 export interface CalendarEvent {
   id: string
@@ -15,16 +16,13 @@ export interface CalendarEvent {
 }
 
 export class CalendarService {
-  private readonly GOOGLE_API_KEY = import.meta.env.PUBLIC_GOOGLE_API_KEY
-  private readonly CALENDAR_ID = import.meta.env.PUBLIC_CALENDAR_ID
+  private readonly GOOGLE_API_KEY = config.googleApiKey
+  private readonly CALENDAR_ID = config.calendarId
 
   /**
    * Make a request to Google Calendar API
    */
   private async fetchFromAPI(timeMin: string, timeMax?: string, maxResults: string = '2500'): Promise<any> {
-    if (!this.GOOGLE_API_KEY || !this.CALENDAR_ID) {
-      throw new Error('Missing VITE_GOOGLE_API_KEY or VITE_CALENDAR_ID environment variables')
-    }
 
     const params = new URLSearchParams({
       key: this.GOOGLE_API_KEY,
