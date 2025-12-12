@@ -35,7 +35,8 @@ jobs:
       - name: Build with Astro
         run: npm run build
         env:
-          # Add your Cloudflare Worker URLs here
+          PUBLIC_GOOGLE_API_KEY: ${{ secrets.PUBLIC_GOOGLE_API_KEY }}
+          PUBLIC_CALENDAR_ID: ${{ secrets.PUBLIC_CALENDAR_ID }}
           VITE_CALENDAR_API_URL: ${{ secrets.VITE_CALENDAR_API_URL }}
           VITE_FLICKR_API_URL: ${{ secrets.VITE_FLICKR_API_URL }}
 
