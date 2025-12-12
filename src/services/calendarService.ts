@@ -3,40 +3,59 @@ import { format, isAfter, isBefore, addDays, subDays, startOfDay, startOfMonth, 
 export interface CalendarEvent {
   id: string
   title: string
+  displayTitle: string
   description?: string
   start: Date
   end: Date
   location?: string
   isAllDay: boolean
+  requiresRegistration: boolean
+  registrationUrl?: string
+  registrationCost?: string
 }
 
 export class CalendarService {
-  private readonly API_ENDPOINT = '/.netlify/functions/calendar-api'
+  private readonly GOOGLE_API_KEY = import.meta.env.PUBLIC_GOOGLE_API_KEY
+  private readonly CALENDAR_ID = import.meta.env.PUBLIC_CALENDAR_ID
 
   /**
-   * Make a request to our Netlify function
+   * Make a request to Google Calendar API
    */
-  private async fetchFromNetlifyFunction(timeMin: string, timeMax?: string, maxResults: string = '2500'): Promise<any> {
+  private async fetchFromAPI(timeMin: string, timeMax?: string, maxResults: string = '2500'): Promise<any> {
+    if (!this.GOOGLE_API_KEY || !this.CALENDAR_ID) {
+      throw new Error('Missing VITE_GOOGLE_API_KEY or VITE_CALENDAR_ID environment variables')
+    }
+
     const params = new URLSearchParams({
+      key: this.GOOGLE_API_KEY,
       timeMin,
-      maxResults
+      maxResults,
+      orderBy: 'startTime',
+      singleEvents: 'true'
     })
 
     if (timeMax) {
       params.append('timeMax', timeMax)
     }
 
-    const url = `${this.API_ENDPOINT}?${params}`
-    console.log('Fetching from Netlify function:', url)
+    const calendarId = encodeURIComponent(this.CALENDAR_ID)
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?${params.toString()}`
+    console.log('Fetching from Google Calendar API:', url.replace(this.GOOGLE_API_KEY, 'HIDDEN_KEY'))
 
     const response = await fetch(url)
 
     if (!response.ok) {
       const errorText = await response.text()
-      throw new Error(`Netlify function error: ${response.status} ${response.statusText} - ${errorText}`)
+      throw new Error(`API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    return response.json()
+    const data = await response.json()
+
+    if (data.error) {
+      throw new Error(`Google Calendar API error: ${data.error.message}`)
+    }
+
+    return data
   }
 
   /**
@@ -50,9 +69,9 @@ export class CalendarService {
       const timeMin = now.toISOString()
       const timeMax = futureLimit.toISOString()
 
-      console.log('Fetching upcoming events from Netlify function')
+      console.log('Fetching upcoming events from API')
 
-      const data = await this.fetchFromNetlifyFunction(timeMin, timeMax)
+      const data = await this.fetchFromAPI(timeMin, timeMax)
       console.log('API Response:', data)
 
       if (!data.items) {
@@ -93,9 +112,9 @@ export class CalendarService {
       const timeMin = fetchStart.toISOString()
       const timeMax = monthEnd.toISOString()
 
-      console.log('Fetching month events from Netlify function:', format(monthDate, 'MMMM yyyy'), `(from ${format(fetchStart, 'MMM d')} to ${format(monthEnd, 'MMM d')})`)
+      console.log('Fetching month events from API:', format(monthDate, 'MMMM yyyy'), `(from ${format(fetchStart, 'MMM d')} to ${format(monthEnd, 'MMM d')})`)
 
-      const data = await this.fetchFromNetlifyFunction(timeMin, timeMax)
+      const data = await this.fetchFromAPI(timeMin, timeMax)
       console.log(`API Response for ${format(monthDate, 'MMMM yyyy')}:`, data)
 
       if (!data.items) {
@@ -137,9 +156,9 @@ export class CalendarService {
       const timeMin = now.toISOString()
       const timeMax = futureLimit.toISOString()
 
-      console.log('Fetching all future events from Netlify function')
+      console.log('Fetching all future events from API')
 
-      const data = await this.fetchFromNetlifyFunction(timeMin, timeMax)
+      const data = await this.fetchFromAPI(timeMin, timeMax)
 
       if (!data.items) {
         console.log('No future events found')
@@ -176,9 +195,9 @@ export class CalendarService {
       const timeMin = now.toISOString()
       const timeMax = futureLimit.toISOString()
 
-      console.log('Fetching all events including Open Hours from Netlify function')
+      console.log('Fetching all events including Open Hours from API')
 
-      const data = await this.fetchFromNetlifyFunction(timeMin, timeMax)
+      const data = await this.fetchFromAPI(timeMin, timeMax)
 
       if (!data.items) {
         console.log('No events found in response')
@@ -208,9 +227,9 @@ export class CalendarService {
       const timeMin = now.toISOString()
       const timeMax = futureLimit.toISOString()
 
-      console.log('Fetching recurring events from Netlify function')
+      console.log('Fetching recurring events from API')
 
-      const data = await this.fetchFromNetlifyFunction(timeMin, timeMax)
+      const data = await this.fetchFromAPI(timeMin, timeMax)
 
       // Filter for events that appear multiple times
       const recurringEvents = data.items ? data.items
@@ -250,68 +269,56 @@ export class CalendarService {
       endDate = item.end.dateTime ? new Date(item.end.dateTime) : startDate
     }
 
+    const title = item.summary || 'Untitled Event'
+    const description = item.description || ''
+
+    // Detect registration requirements
+    const registrationRegex = /[\s\-–—·•|,]*\(?registration required\)?[\s\-–—·•|,]*/gi
+    const guestlistRegex = /https?:\/\/guestli(?:\.st|st\.co)\/[^\s<>"')]+/i
+    const hasRegistrationInTitle = registrationRegex.test(title)
+    const guestlistMatch = description.match(guestlistRegex)
+    const hasGuestlistUrl = !!guestlistMatch
+    const requiresRegistration = hasRegistrationInTitle || hasGuestlistUrl
+
+    // Extract registration URL if present
+    const registrationUrl = guestlistMatch ? guestlistMatch[0] : undefined
+
+    // Extract cost if present (e.g., $17, ($17), $17.50)
+    const costRegex = /\(?(\$\d+(?:\.\d{2})?)\)?/
+    const costMatch = description.match(costRegex)
+    const registrationCost = costMatch ? costMatch[1] : undefined
+
+    // Clean the title by removing "registration required" text and empty parentheses
+    const displayTitle = title
+      .replace(registrationRegex, ' ')
+      .replace(/\(\s*\)/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    // Clean the description by removing "Registration Required" patterns, guestlist links, and cost
+    const cleanDescription = description
+      .replace(/Registration\s*Required:?\s*https?:\/\/guestli(?:\.st|st\.co)\/[^\s<>"')]+\s*/gi, '')
+      .replace(/\(?Registration\s*Required\)?:?\s*/gi, '')
+      .replace(/https?:\/\/guestli(?:\.st|st\.co)\/[^\s<>"')]+/gi, '')
+      .replace(/\(?\$\d+(?:\.\d{2})?\)?:?\s*/g, '')
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/\n+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
     return {
       id: item.id,
-      title: item.summary || 'Untitled Event',
-      description: item.description || '',
+      title,
+      displayTitle: displayTitle || title,
+      description: cleanDescription,
       start: startDate,
       end: endDate,
       location: item.location || '',
-      isAllDay
+      isAllDay,
+      requiresRegistration,
+      registrationUrl,
+      registrationCost
     }
-  }
-
-  /**
-   * Get demo events for fallback
-   */
-  private getDemoEvents(): CalendarEvent[] {
-    const now = new Date()
-
-    // Create proper date/time objects
-    const workshop1 = addDays(now, 2)
-    workshop1.setHours(19, 0, 0, 0) // 7 PM
-    const workshop1End = new Date(workshop1)
-    workshop1End.setHours(21, 0, 0, 0) // 9 PM
-
-    const workshop2 = addDays(now, 5)
-    workshop2.setHours(18, 0, 0, 0) // 6 PM
-    const workshop2End = new Date(workshop2)
-    workshop2End.setHours(20, 0, 0, 0) // 8 PM
-
-    const openHouse = addDays(now, 8)
-    openHouse.setHours(12, 0, 0, 0) // 12 PM
-    const openHouseEnd = new Date(openHouse)
-    openHouseEnd.setHours(18, 0, 0, 0) // 6 PM
-
-    return [
-      {
-        id: 'demo-1',
-        title: 'Arduino Workshop',
-        description: 'Learn the basics of Arduino programming and electronics. Bring your laptop!',
-        start: workshop1,
-        end: workshop1End,
-        location: 'HeatSync Labs Workshop Area',
-        isAllDay: false
-      },
-      {
-        id: 'demo-2',
-        title: '3D Printing Workshop',
-        description: 'Introduction to 3D printing and design. We\'ll cover CAD basics and printing techniques.',
-        start: workshop2,
-        end: workshop2End,
-        location: 'HeatSync Labs Maker Space',
-        isAllDay: false
-      },
-      {
-        id: 'demo-3',
-        title: 'Community Open House',
-        description: 'Come check out the space, meet the community, and see what we\'re all about!',
-        start: openHouse,
-        end: openHouseEnd,
-        location: 'HeatSync Labs - 108 W Main St, Mesa, AZ',
-        isAllDay: false
-      }
-    ]
   }
 
   /**

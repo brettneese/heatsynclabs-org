@@ -4,15 +4,13 @@
     <p class="styled-donate__text">
       Help keep HeatSync Labs running and accessible to everyone.
     </p>
-    <form
-      action="https://www.paypal.com/cgi-bin/webscr"
-      method="post"
-      target="_top"
-      class="styled-donate__form"
+    <a
+      href="https://www.zeffy.com/en-US/donation-form/donate-to-heatsync"
+      target="_blank"
+      rel="noopener"
+      class="styled-donate__link"
     >
-      <input type="hidden" name="cmd" value="_s-xclick" />
-      <input type="hidden" name="hosted_button_id" value="7596RGJWUWZZ4" />
-      <button type="submit" class="styled-donate__button">
+      <button type="button" class="styled-donate__button">
         <span class="styled-donate__button-text">Donate Now</span>
         <div class="hearts-container">
           <svg class="heart-icon heart-1" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
@@ -26,7 +24,7 @@
           </svg>
         </div>
       </button>
-    </form>
+    </a>
   </div>
 </template>
 
@@ -58,8 +56,9 @@
   opacity: 0.9;
 }
 
-.styled-donate__form {
+.styled-donate__link {
   display: inline-block;
+  text-decoration: none;
 }
 
 .styled-donate__button {

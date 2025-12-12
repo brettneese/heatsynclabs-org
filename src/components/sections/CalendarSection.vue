@@ -28,7 +28,7 @@
       </div>
 
       <div class="calendar__footer">
-        <BaseButton variant="outline" to="/calendar">
+        <BaseButton variant="outline" href="/calendar">
           View Full Calendar
         </BaseButton>
       </div>

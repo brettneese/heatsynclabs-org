@@ -9,44 +9,26 @@ export interface FlickrPhoto {
   secret: string
 }
 
-export class FlickrService {
-  private readonly FLICKR_API_URL = 'https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=bec64c9c0f28889dc6e0c5ef7be3511f&user_id=60827818%40N07&tags=publish&format=rest'
+// Flickr API configuration
+const FLICKR_API_KEY = 'bec64c9c0f28889dc6e0c5ef7be3511f'
+const FLICKR_USER_ID = '60827818@N07'
 
+export class FlickrService {
   async getPhotos(limit: number = 20): Promise<FlickrPhoto[]> {
     try {
-      // Use our Netlify function to fetch the XML data
-      const response = await fetch(`/.netlify/functions/flickr-api?limit=${limit}`)
+      // Use JSONP to bypass CORS - Flickr supports this natively
+      const data = await this.fetchWithJsonp(limit)
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`)
-      }
-
-      const data = await response.json()
-      const xmlText = data.contents
-
-      // Parse the XML
-      const parser = new DOMParser()
-      const xmlDoc = parser.parseFromString(xmlText, 'text/xml')
-
-      // Check for XML parsing errors
-      const parserError = xmlDoc.querySelector('parsererror')
-      if (parserError) {
-        throw new Error('Failed to parse XML response')
-      }
-
-      // Get photo elements
-      const photos = xmlDoc.querySelectorAll('photo')
-
-      if (photos.length === 0) {
+      if (data.stat !== 'ok' || !data.photos?.photo) {
         return []
       }
 
-      return Array.from(photos).slice(0, limit).map((photo): FlickrPhoto => {
-        const id = photo.getAttribute('id') || ''
-        const title = photo.getAttribute('title') || 'HeatSync Labs Photo'
-        const farm = photo.getAttribute('farm') || ''
-        const server = photo.getAttribute('server') || ''
-        const secret = photo.getAttribute('secret') || ''
+      return data.photos.photo.slice(0, limit).map((photo: any): FlickrPhoto => {
+        const id = photo.id || ''
+        const title = photo.title || 'HeatSync Labs Photo'
+        const farm = photo.farm || ''
+        const server = photo.server || ''
+        const secret = photo.secret || ''
 
         // Build URLs using Flickr's URL structure
         const baseUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}`
@@ -66,5 +48,49 @@ export class FlickrService {
       console.error('Failed to fetch Flickr photos:', error)
       return []
     }
+  }
+
+  private fetchWithJsonp(limit: number): Promise<any> {
+    return new Promise((resolve, reject) => {
+      // Generate unique callback name
+      const callbackName = `flickrCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`
+
+      // Set up the callback function
+      ;(window as any)[callbackName] = (data: any) => {
+        // Clean up
+        delete (window as any)[callbackName]
+        document.head.removeChild(script)
+        resolve(data)
+      }
+
+      // Create script element
+      const script = document.createElement('script')
+      script.src = `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${FLICKR_API_KEY}&user_id=${encodeURIComponent(FLICKR_USER_ID)}&tags=publish&format=json&jsoncallback=${callbackName}&per_page=${limit}`
+
+      script.onerror = () => {
+        delete (window as any)[callbackName]
+        document.head.removeChild(script)
+        reject(new Error('Failed to load Flickr API'))
+      }
+
+      // Add timeout
+      const timeout = setTimeout(() => {
+        if ((window as any)[callbackName]) {
+          delete (window as any)[callbackName]
+          document.head.removeChild(script)
+          reject(new Error('Flickr API request timed out'))
+        }
+      }, 10000)
+
+      // Modify callback to clear timeout
+      const originalCallback = (window as any)[callbackName]
+      ;(window as any)[callbackName] = (data: any) => {
+        clearTimeout(timeout)
+        originalCallback(data)
+      }
+
+      // Execute the request
+      document.head.appendChild(script)
+    })
   }
 }

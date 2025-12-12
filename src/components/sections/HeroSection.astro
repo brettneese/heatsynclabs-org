@@ -1,0 +1,237 @@
+---
+import BaseContainer from '../base/BaseContainer.astro';
+import BaseButton from '../base/BaseButton.astro';
+import PhotoCollage from '../graphics/PhotoCollage.vue';
+import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
+---
+
+<section class="hero">
+  <BaseContainer>
+    <div class="hero__content">
+      <h1 class="hero__title">
+        <span class="hero__action-word" data-words='["solder", "weld", "sew", "code", "cut", "craft", "hack", "launch", "3d print"]'>
+          <span class="hero__word">solder</span>
+        </span>
+        <span class="hero__with-us">with us</span>
+      </h1>
+      <p class="hero__tagline">
+        An Arizona non-profit hackerspace for mad scientists and mad artists.
+      </p>
+      <div class="hero__actions">
+        <BaseButton variant="primary" size="lg" href="http://bit.ly/hslslack" target="_blank" rel="noopener">
+          Join the Community
+        </BaseButton>
+        <BaseButton variant="secondary" size="lg" href="/about#visit-us">
+          Visit Us In Downtown Mesa
+        </BaseButton>
+      </div>
+    </div>
+
+    <!-- Desktop pattern - positioned absolutely on larger screens -->
+    <div class="hero__pattern">
+      <PhotoCollage client:load />
+    </div>
+  </BaseContainer>
+
+  <!-- Mobile photo carousel - only visible on small screens -->
+  <div class="hero__mobile-photos">
+    <BaseContainer>
+      <MobilePhotoCarousel client:load />
+    </BaseContainer>
+  </div>
+</section>
+
+<script>
+  // Animated word rotation
+  const actionWordElement = document.querySelector('.hero__action-word');
+  if (actionWordElement) {
+    const words = JSON.parse(actionWordElement.getAttribute('data-words') || '[]');
+    const wordElement = actionWordElement.querySelector('.hero__word');
+    let currentIndex = 0;
+
+    function rotateWord() {
+      if (!wordElement) return;
+
+      // Fade out
+      wordElement.style.opacity = '0';
+      wordElement.style.transform = 'translateY(-20px)';
+
+      setTimeout(() => {
+        // Change word
+        currentIndex = (currentIndex + 1) % words.length;
+        wordElement.textContent = words[currentIndex];
+
+        // Fade in
+        wordElement.style.opacity = '1';
+        wordElement.style.transform = 'translateY(0)';
+      }, 300);
+    }
+
+    // Rotate every 2 seconds
+    setInterval(rotateWord, 2000);
+  }
+</script>
+
+<style>
+  .hero {
+    padding: var(--space-32) 0 var(--space-24);
+    position: relative;
+    overflow: hidden;
+    min-height: 60vh;
+    display: flex;
+    align-items: center;
+    background: linear-gradient(135deg, #ff8c00 0%, #ff6b00 100%);
+  }
+
+  .hero .container {
+    position: relative;
+    z-index: var(--z-raised);
+  }
+
+  .hero__content {
+    max-width: 900px;
+    position: relative;
+    z-index: var(--z-raised);
+  }
+
+  .hero__title {
+    font-size: clamp(3.5rem, 12vw, 8rem);
+    font-weight: var(--font-bold);
+    line-height: 1.1;
+    margin-bottom: var(--space-8);
+    letter-spacing: var(--tracking-tight);
+    font-family: var(--font-sans);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0;
+    align-items: baseline;
+    color: white;
+  }
+
+  .hero__action-word {
+    color: white;
+    display: inline-block;
+    position: relative;
+    min-width: 200px;
+  }
+
+  .hero__word {
+    display: inline-block;
+    transition: opacity 0.3s ease, transform 0.3s ease;
+    will-change: opacity, transform;
+  }
+
+  .hero__with-us {
+    color: white;
+    font-weight: var(--font-light);
+    flex-basis: 100%;
+  }
+
+  .hero__tagline {
+    font-size: clamp(var(--text-lg), 2vw, var(--text-2xl));
+    color: rgba(255, 255, 255, 0.95);
+    margin-bottom: var(--space-12);
+    font-family: var(--font-sans);
+    line-height: var(--leading-relaxed);
+    max-width: 700px;
+  }
+
+  .hero__actions {
+    display: flex;
+    gap: var(--space-5);
+    flex-wrap: wrap;
+  }
+
+  .hero__pattern {
+    position: absolute;
+    top: 0;
+    right: 150px;
+    width: 600px;
+    height: 100%;
+    opacity: 0.9;
+    pointer-events: none;
+    z-index: var(--z-base);
+  }
+
+  .hero__mobile-photos {
+    display: none;
+    padding: var(--space-8) 0 0;
+  }
+
+  /* Responsive */
+  @media (max-width: 1440px) {
+    .hero__pattern {
+      right: 100px;
+    }
+  }
+
+  @media (max-width: 1024px) {
+    .hero__pattern {
+      right: 50px;
+      width: 500px;
+      opacity: 0.8;
+    }
+  }
+
+  @media (max-width: 1100px) {
+    .hero {
+      padding: var(--space-20) 0 var(--space-8);
+    }
+
+    .hero__pattern {
+      display: none;
+    }
+
+    .hero__mobile-photos {
+      display: block;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero {
+      padding: var(--space-20) 0 var(--space-16);
+      min-height: 50vh;
+    }
+
+    .hero__title {
+      font-size: clamp(2.5rem, 10vw, 5rem);
+      gap: 1rem;
+    }
+
+    .hero__action-word {
+      min-width: 150px;
+    }
+
+    .hero__tagline {
+      font-size: var(--text-lg);
+    }
+
+    .hero__actions {
+      flex-direction: column;
+      align-items: flex-start;
+      width: 100%;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .hero__title {
+      font-size: clamp(2rem, 12vw, 3.5rem);
+      flex-direction: column;
+      gap: 0.5rem;
+    }
+
+    .hero__action-word {
+      min-width: unset;
+    }
+
+    .hero__actions {
+      width: 100%;
+    }
+
+    .hero__actions .btn {
+      width: 100%;
+      justify-content: center;
+    }
+  }
+</style>
+

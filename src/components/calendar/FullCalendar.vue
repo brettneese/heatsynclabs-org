@@ -107,7 +107,7 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted } from 'vue'
-import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, addMonths, subMonths, isToday, getWeek, getDay } from 'date-fns'
+import { format, startOfMonth, endOfMonth, startOfWeek, endOfWeek, eachDayOfInterval, isSameDay, isSameMonth, addMonths, subMonths, isToday, getWeek, getDay, startOfDay, endOfDay, isWithinInterval } from 'date-fns'
 import EventCard from '../events/EventCard.vue'
 import EventModal from '../events/EventModal.vue'
 import { CalendarService, type CalendarEvent } from '../../services/calendarService'
@@ -152,9 +152,16 @@ const calendarDays = computed(() => {
     date: day,
     isCurrentMonth: isSameMonth(day, currentDate.value),
     isToday: isToday(day),
-    events: allEvents.value.filter(event =>
-      isSameDay(event.start, day)
-    )
+    events: allEvents.value.filter(event => {
+      // Check if this day falls within the event's date range (for multi-day events)
+      const dayStart = startOfDay(day)
+      const dayEnd = endOfDay(day)
+      const eventStart = startOfDay(event.start)
+      const eventEnd = startOfDay(event.end)
+
+      // Event spans this day if: eventStart <= day <= eventEnd
+      return dayStart >= eventStart && dayStart <= eventEnd
+    })
   }))
 })
 
