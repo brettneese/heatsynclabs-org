@@ -32,13 +32,13 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
       <PhotoCollage client:load />
     </div>
   </BaseContainer>
+</section>
 
-  <!-- Mobile photo carousel - only visible on small screens -->
-  <div class="hero__mobile-photos">
-    <BaseContainer>
-      <MobilePhotoCarousel client:load />
-    </BaseContainer>
-  </div>
+<!-- Mobile photo carousel - only visible on small screens, AFTER hero -->
+<section class="hero-mobile-photos">
+  <BaseContainer>
+    <MobilePhotoCarousel client:load />
+  </BaseContainer>
 </section>
 
 <script>
@@ -153,9 +153,10 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
     z-index: var(--z-base);
   }
 
-  .hero__mobile-photos {
+  .hero-mobile-photos {
     display: none;
-    padding: var(--space-8) 0 0;
+    padding: var(--space-8) 0;
+    background: var(--color-surface);
   }
 
   /* Responsive */
@@ -182,7 +183,7 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
       display: none;
     }
 
-    .hero__mobile-photos {
+    .hero-mobile-photos {
       display: block;
     }
   }
