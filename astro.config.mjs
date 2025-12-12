@@ -3,8 +3,10 @@ import vue from "@astrojs/vue";
 
 // https://astro.build/config
 export default defineConfig({
+  site: "https://brettneese.github.io",
+  base: "/heatsynclabs-org",
   integrations: [vue()],
-  output: "static", // Static mode: calendar API calls made directly from client
+  output: "static",
   build: {
     assets: "assets",
   },

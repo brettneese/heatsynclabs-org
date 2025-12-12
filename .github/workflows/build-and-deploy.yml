@@ -32,14 +32,12 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      - name: Build with Vite
+      - name: Build with Astro
         run: npm run build
         env:
-          GITHUB_PAGES: true
           # Add your Cloudflare Worker URLs here
           VITE_CALENDAR_API_URL: ${{ secrets.VITE_CALENDAR_API_URL }}
           VITE_FLICKR_API_URL: ${{ secrets.VITE_FLICKR_API_URL }}
-          VITE_BASE: ${{ vars.VITE_BASE }}
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
