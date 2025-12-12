@@ -1,6 +1,6 @@
 ---
 title: "Support HeatSync Labs"
-description: "Help keep Mesa's community hackerspace open and accessible to everyone"
+description: "Help keep our hackerspace open and accessible to everyone"
 ---
 
 # Support HeatSync Labs
@@ -35,7 +35,7 @@ Have tools or equipment you no longer need? We accept donations of working tools
 
 ### Corporate Sponsorship
 
-Interested in corporate sponsorship opportunities? We offer various sponsorship levels for businesses that want to support maker education and community development in Mesa.
+Interested in corporate sponsorship opportunities? We offer various sponsorship levels for businesses that want to support maker education and innovation across Arizona.
 
 Contact us to learn about sponsorship packages and benefits.
 
@@ -55,4 +55,4 @@ Supports classes, workshops, and educational initiatives for all skill levels.
 
 ## Thank You
 
-HeatSync Labs exists because of supporters like you. Whether you become a member, make a donation, or simply spread the word about what we do, you're helping to build something special in Mesa. Thank you for being part of our community.
+HeatSync Labs exists because of supporters like you. Whether you become a member, make a donation, or simply spread the word about what we do, you're helping to build something special. Thank you for being part of our community.

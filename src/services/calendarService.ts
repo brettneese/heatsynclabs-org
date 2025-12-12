@@ -3,31 +3,44 @@ import { format, isAfter, isBefore, addDays, subDays, startOfDay, startOfMonth, 
 export interface CalendarEvent {
   id: string
   title: string
+  displayTitle: string
   description?: string
   start: Date
   end: Date
   location?: string
   isAllDay: boolean
+  requiresRegistration: boolean
+  registrationUrl?: string
+  registrationCost?: string
 }
 
 export class CalendarService {
-  private readonly API_ENDPOINT = '/api/calendar'
+  private readonly GOOGLE_API_KEY = import.meta.env.PUBLIC_GOOGLE_API_KEY
+  private readonly CALENDAR_ID = import.meta.env.PUBLIC_CALENDAR_ID
 
   /**
-   * Make a request to our API endpoint
+   * Make a request to Google Calendar API
    */
   private async fetchFromAPI(timeMin: string, timeMax?: string, maxResults: string = '2500'): Promise<any> {
+    if (!this.GOOGLE_API_KEY || !this.CALENDAR_ID) {
+      throw new Error('Missing VITE_GOOGLE_API_KEY or VITE_CALENDAR_ID environment variables')
+    }
+
     const params = new URLSearchParams({
+      key: this.GOOGLE_API_KEY,
       timeMin,
-      maxResults
+      maxResults,
+      orderBy: 'startTime',
+      singleEvents: 'true'
     })
 
     if (timeMax) {
       params.append('timeMax', timeMax)
     }
 
-    const url = `${this.API_ENDPOINT}?${params}`
-    console.log('Fetching from API:', url)
+    const calendarId = encodeURIComponent(this.CALENDAR_ID)
+    const url = `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events?${params.toString()}`
+    console.log('Fetching from Google Calendar API:', url.replace(this.GOOGLE_API_KEY, 'HIDDEN_KEY'))
 
     const response = await fetch(url)
 
@@ -36,7 +49,13 @@ export class CalendarService {
       throw new Error(`API error: ${response.status} ${response.statusText} - ${errorText}`)
     }
 
-    return response.json()
+    const data = await response.json()
+
+    if (data.error) {
+      throw new Error(`Google Calendar API error: ${data.error.message}`)
+    }
+
+    return data
   }
 
   /**
@@ -250,14 +269,55 @@ export class CalendarService {
       endDate = item.end.dateTime ? new Date(item.end.dateTime) : startDate
     }
 
+    const title = item.summary || 'Untitled Event'
+    const description = item.description || ''
+
+    // Detect registration requirements
+    const registrationRegex = /[\s\-–—·•|,]*\(?registration required\)?[\s\-–—·•|,]*/gi
+    const guestlistRegex = /https?:\/\/guestli(?:\.st|st\.co)\/[^\s<>"')]+/i
+    const hasRegistrationInTitle = registrationRegex.test(title)
+    const guestlistMatch = description.match(guestlistRegex)
+    const hasGuestlistUrl = !!guestlistMatch
+    const requiresRegistration = hasRegistrationInTitle || hasGuestlistUrl
+
+    // Extract registration URL if present
+    const registrationUrl = guestlistMatch ? guestlistMatch[0] : undefined
+
+    // Extract cost if present (e.g., $17, ($17), $17.50)
+    const costRegex = /\(?(\$\d+(?:\.\d{2})?)\)?/
+    const costMatch = description.match(costRegex)
+    const registrationCost = costMatch ? costMatch[1] : undefined
+
+    // Clean the title by removing "registration required" text and empty parentheses
+    const displayTitle = title
+      .replace(registrationRegex, ' ')
+      .replace(/\(\s*\)/g, '')
+      .replace(/\s+/g, ' ')
+      .trim()
+
+    // Clean the description by removing "Registration Required" patterns, guestlist links, and cost
+    const cleanDescription = description
+      .replace(/Registration\s*Required:?\s*https?:\/\/guestli(?:\.st|st\.co)\/[^\s<>"')]+\s*/gi, '')
+      .replace(/\(?Registration\s*Required\)?:?\s*/gi, '')
+      .replace(/https?:\/\/guestli(?:\.st|st\.co)\/[^\s<>"')]+/gi, '')
+      .replace(/\(?\$\d+(?:\.\d{2})?\)?:?\s*/g, '')
+      .replace(/<br\s*\/?>/gi, ' ')
+      .replace(/\n+/g, ' ')
+      .replace(/\s+/g, ' ')
+      .trim()
+
     return {
       id: item.id,
-      title: item.summary || 'Untitled Event',
-      description: item.description || '',
+      title,
+      displayTitle: displayTitle || title,
+      description: cleanDescription,
       start: startDate,
       end: endDate,
       location: item.location || '',
-      isAllDay
+      isAllDay,
+      requiresRegistration,
+      registrationUrl,
+      registrationCost
     }
   }
 

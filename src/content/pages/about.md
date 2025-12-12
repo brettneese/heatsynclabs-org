@@ -1,15 +1,15 @@
 ---
 title: "About HeatSync Labs"
-description: "Mesa's premier community hackerspace, fostering innovation and collaboration since 2009"
+description: "Arizona's premier community-operated hackerspace, fostering innovation and collaboration since 2009"
 ---
 
 # About HeatSync Labs
 
-Mesa's premier community hackerspace, fostering innovation and collaboration since 2009.
+Arizona's premier community-operated hackerspace, fostering innovation and collaboration since 2009.
 
 ## Our Story
 
-HeatSync Labs began as a grassroots effort to create a collaborative workspace where makers, artists, and technologists could come together to create, learn, and share knowledge. What started as a small group of passionate individuals has grown into Mesa's premier hackerspace.
+HeatSync Labs began as a grassroots effort to create a collaborative workspace where makers, artists, and technologists could come together to create, learn, and share knowledge. What started as a small group of passionate individuals has grown into the region's leading community hackerspace.
 
 As a 501(c)3 non-profit organization, we're member-owned and operated, ensuring that our community's needs always come first. Our 3,200 square foot facility houses everything from 3D printers and laser cutters to traditional woodworking and metalworking tools.
 

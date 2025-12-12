@@ -34,7 +34,7 @@ const displayText = computed(() => {
     const nextOpen = new Date(upcomingOpenHours[0].start)
     const day = format(nextOpen, 'EEE')
     const time = format(nextOpen, 'ha').toLowerCase()
-    return `Closed • ${day} ${time}`
+    return `Closed · Opens ${day} ${time}`
   }
 
   return 'Closed'

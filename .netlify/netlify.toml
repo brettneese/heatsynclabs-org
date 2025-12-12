@@ -1,0 +1,38 @@
+functionsDirectory = "/Users/brettneese/Development/git/github.com/brettneese/heatsynclabs-org/netlify/functions"
+functionsDirectoryOrigin = "default"
+plugins = []
+headers = []
+redirects = []
+
+[build]
+publish = "/Users/brettneese/Development/git/github.com/brettneese/heatsynclabs-org/dist"
+publishOrigin = "config"
+commandOrigin = "config"
+command = "bun run build"
+functions = "/Users/brettneese/Development/git/github.com/brettneese/heatsynclabs-org/netlify/functions"
+
+[build.environment]
+NODE_VERSION = "20.19.0"
+
+[build.processing]
+
+[build.processing.css]
+
+[build.processing.html]
+
+[build.processing.images]
+
+[build.processing.js]
+
+[build.services]
+
+[dev]
+command = "bun run dev"
+port = 8888.0
+targetPort = 4321.0
+publish = "dist"
+autoLaunch = false
+
+[functions]
+
+[functions."*"]

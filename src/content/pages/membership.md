@@ -1,6 +1,6 @@
 ---
 title: "Become a Member"
-description: "Join HeatSync Labs and become part of Mesa's community hackerspace"
+description: "Join HeatSync Labs and become part of Arizona's maker community"
 ---
 
 # Become a Member

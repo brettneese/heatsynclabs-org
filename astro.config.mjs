@@ -1,12 +1,10 @@
 import { defineConfig } from "astro/config";
 import vue from "@astrojs/vue";
-import netlify from "@astrojs/netlify";
 
 // https://astro.build/config
 export default defineConfig({
   integrations: [vue()],
-  output: "hybrid", // Hybrid mode: static pages + API routes as serverless functions
-  adapter: netlify(),
+  output: "static", // Static mode: calendar API calls made directly from client
   build: {
     assets: "assets",
   },
