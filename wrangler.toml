@@ -1,0 +1,21 @@
+# Cloudflare Pages configuration for HeatSync Labs website
+# https://developers.cloudflare.com/pages/functions/wrangler-configuration/
+
+name = "heatsync-website"
+compatibility_date = "2024-01-01"
+
+# Pages-specific settings
+pages_build_output_dir = "dist"
+
+# Environment variables (set these in Cloudflare Dashboard or via wrangler secret)
+# RESEND_API_KEY - Your Resend API key for sending emails
+# CONTACT_EMAIL - Email address to receive contact form submissions (defaults to info@heatsynclabs.org)
+
+[vars]
+# Non-secret environment variables can be set here
+# CONTACT_EMAIL = "info@heatsynclabs.org"
+
+# For local development, create a .dev.vars file with:
+# RESEND_API_KEY=your_resend_api_key
+# CONTACT_EMAIL=info@heatsynclabs.org
+
