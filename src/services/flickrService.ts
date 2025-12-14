@@ -54,9 +54,11 @@ export class FlickrService {
     return new Promise((resolve, reject) => {
       // Generate unique callback name
       const callbackName = `flickrCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`
+      let completed = false
 
       // Set up the callback function
       ;(window as any)[callbackName] = (data: any) => {
+        completed = true
         // Clean up
         delete (window as any)[callbackName]
         document.head.removeChild(script)
@@ -68,14 +70,18 @@ export class FlickrService {
       script.src = `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${FLICKR_API_KEY}&user_id=${encodeURIComponent(FLICKR_USER_ID)}&tags=publish&format=json&jsoncallback=${callbackName}&per_page=${limit}`
 
       script.onerror = () => {
-        delete (window as any)[callbackName]
-        document.head.removeChild(script)
-        reject(new Error('Failed to load Flickr API'))
+        // Only reject if the callback hasn't already succeeded
+        if (!completed) {
+          delete (window as any)[callbackName]
+          document.head.removeChild(script)
+          reject(new Error('Failed to load Flickr API'))
+        }
       }
 
       // Add timeout
       const timeout = setTimeout(() => {
         if ((window as any)[callbackName]) {
+          completed = true
           delete (window as any)[callbackName]
           document.head.removeChild(script)
           reject(new Error('Flickr API request timed out'))
