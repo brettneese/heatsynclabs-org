@@ -172,10 +172,10 @@ onUnmounted(() => {
 
 @keyframes glow {
   0%, 100% {
-    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5), 0 0 16px rgba(34, 197, 94, 0.3);
+    box-shadow: 0 0 8px rgba(134, 239, 172, 0.5), 0 0 16px rgba(134, 239, 172, 0.3);
   }
   50% {
-    box-shadow: 0 0 14px rgba(34, 197, 94, 0.7), 0 0 28px rgba(34, 197, 94, 0.5);
+    box-shadow: 0 0 14px rgba(134, 239, 172, 0.7), 0 0 28px rgba(134, 239, 172, 0.5);
   }
 }
 
@@ -188,12 +188,12 @@ onUnmounted(() => {
 .status-badge.status-badge--open {
   background-color: transparent;
   color: var(--ink-black);
-  border: 1.5px solid #22c55e;
+  border: 1.5px solid #86efac;
   animation: glow 2s ease-in-out infinite;
 }
 
 .status-badge.status-badge--open .status-dot {
-  background: #22c55e;
+  background: #86efac;
 }
 
 /* Closed state - black text with red outline */
