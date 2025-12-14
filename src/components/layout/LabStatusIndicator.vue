@@ -135,7 +135,6 @@ onUnmounted(() => {
   letter-spacing: 0.5px;
   font-family: var(--font-mono);
   transition: all var(--transition-fast);
-  border-radius: 4px;
   text-transform: uppercase;
 }
 
@@ -185,18 +184,16 @@ onUnmounted(() => {
   font-size: 11px;
 }
 
-/* Open state - white text on green with glow */
+/* Open state - black text on green with glow */
 .status-badge.status-badge--open {
-  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
-  color: white;
+  background: #22c55e;
+  color: var(--ink-black);
   border: none;
-  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
   animation: glow 2s ease-in-out infinite;
 }
 
 .status-badge.status-badge--open .status-dot {
-  background: white;
-  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+  background: var(--ink-black);
 }
 
 /* Closed state - black text with red outline */
