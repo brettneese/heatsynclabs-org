@@ -55,48 +55,52 @@ export class FlickrService {
       // Generate unique callback name
       const callbackName = `flickrCallback_${Date.now()}_${Math.random().toString(36).slice(2)}`
       let completed = false
+      let timeoutId: number | null = null
+      let scriptElement: HTMLScriptElement | null = null
+
+      const cleanup = () => {
+        if (timeoutId) clearTimeout(timeoutId)
+        if ((window as any)[callbackName]) {
+          delete (window as any)[callbackName]
+        }
+        if (scriptElement && scriptElement.parentNode) {
+          scriptElement.parentNode.removeChild(scriptElement)
+        }
+      }
 
       // Set up the callback function
       ;(window as any)[callbackName] = (data: any) => {
-        completed = true
-        // Clean up
-        delete (window as any)[callbackName]
-        document.head.removeChild(script)
-        resolve(data)
+        if (!completed) {
+          completed = true
+          cleanup()
+          resolve(data)
+        }
       }
 
       // Create script element
-      const script = document.createElement('script')
-      script.src = `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${FLICKR_API_KEY}&user_id=${encodeURIComponent(FLICKR_USER_ID)}&tags=publish&format=json&jsoncallback=${callbackName}&per_page=${limit}`
+      scriptElement = document.createElement('script')
+      scriptElement.src = `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${FLICKR_API_KEY}&user_id=${encodeURIComponent(FLICKR_USER_ID)}&tags=publish&format=json&jsoncallback=${callbackName}&per_page=${limit}`
 
-      script.onerror = () => {
+      scriptElement.onerror = () => {
         // Only reject if the callback hasn't already succeeded
         if (!completed) {
-          delete (window as any)[callbackName]
-          document.head.removeChild(script)
+          completed = true
+          cleanup()
           reject(new Error('Failed to load Flickr API'))
         }
       }
 
-      // Add timeout
-      const timeout = setTimeout(() => {
-        if ((window as any)[callbackName]) {
+      // Add timeout (30 seconds to account for slow Flickr API)
+      timeoutId = window.setTimeout(() => {
+        if (!completed) {
           completed = true
-          delete (window as any)[callbackName]
-          document.head.removeChild(script)
+          cleanup()
           reject(new Error('Flickr API request timed out'))
         }
-      }, 10000)
-
-      // Modify callback to clear timeout
-      const originalCallback = (window as any)[callbackName]
-      ;(window as any)[callbackName] = (data: any) => {
-        clearTimeout(timeout)
-        originalCallback(data)
-      }
+      }, 30000)
 
       // Execute the request
-      document.head.appendChild(script)
+      document.head.appendChild(scriptElement)
     })
   }
 }
