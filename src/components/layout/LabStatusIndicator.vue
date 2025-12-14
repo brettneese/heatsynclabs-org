@@ -184,16 +184,16 @@ onUnmounted(() => {
   font-size: 11px;
 }
 
-/* Open state - black text on green with glow */
+/* Open state - black text with green outline and glow */
 .status-badge.status-badge--open {
-  background: #22c55e;
+  background-color: transparent;
   color: var(--ink-black);
-  border: none;
+  border: 1.5px solid #22c55e;
   animation: glow 2s ease-in-out infinite;
 }
 
 .status-badge.status-badge--open .status-dot {
-  background: var(--ink-black);
+  background: #22c55e;
 }
 
 /* Closed state - black text with red outline */
