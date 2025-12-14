@@ -1,3 +1,5 @@
+import { PROSPECTS_SEGMENT_ID, TOPICS, type InterestKey } from './config';
+
 interface ContactRequest {
   name: string;
   email: string;
@@ -8,8 +10,9 @@ interface ContactRequest {
 
 interface Env {
   RESEND_API_KEY: string;
-  CONTACT_EMAIL: string;
 }
+
+type PagesFunction<T = unknown> = (context: { request: Request; env: T }) => Promise<Response>;
 
 export const onRequestPost: PagesFunction<Env> = async (context) => {
   const { request, env } = context;
@@ -58,114 +61,96 @@ export const onRequestPost: PagesFunction<Env> = async (context) => {
       );
     }
 
-    const contactEmail = env.CONTACT_EMAIL || 'info@heatsynclabs.org';
+    // Parse name into first and last name
+    const nameParts = name.trim().split(/\s+/);
+    const firstName = nameParts[0];
+    const lastName = nameParts.length > 1 ? nameParts.slice(1).join(' ') : undefined;
 
-    // Format interests for email
-    const interestLabels: Record<string, string> = {
-      'classes': 'Learning about classes',
-      'connect-member': 'Connecting with a member',
-      'email-updates': 'Receiving occasional email updates',
+    // Build properties object with metadata
+    const properties: Record<string, string> = {
+      interests: interests.join(','),
+      source: 'website_contact_form',
+      submitted_at: new Date().toISOString(),
     };
 
-    const formattedInterests = interests
-      .map(interest => interestLabels[interest] || interest)
-      .join('\n  • ');
+    if (referredBy && referredBy.trim()) {
+      properties.referred_by = referredBy.trim();
+    }
 
-    // Send email via Resend
-    const resendResponse = await fetch('https://api.resend.com/emails', {
+    if (notes && notes.trim()) {
+      properties.notes = notes.trim();
+    }
+
+    // Create contact via Resend API
+    const createContactResponse = await fetch('https://api.resend.com/contacts', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${env.RESEND_API_KEY}`,
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        from: 'HeatSync Labs Website <noreply@heatsynclabs.org>',
-        to: [contactEmail],
-        reply_to: email,
-        subject: `New Contact Form Submission from ${name.trim()}`,
-        text: `
-New contact form submission from the HeatSync Labs website:
-
-Name: ${name.trim()}
-Email: ${email.trim()}
-
-Interests:
-  • ${formattedInterests}
-${referredBy && referredBy.trim() ? `\nReferred by: ${referredBy.trim()}` : ''}
-${notes && notes.trim() ? `\nNotes:\n${notes.trim()}` : ''}
-
----
-This message was sent via the contact form at heatsynclabs.org
-        `.trim(),
-        html: `
-<!DOCTYPE html>
-<html>
-<head>
-  <style>
-    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #1a1918; }
-    .container { max-width: 600px; margin: 0 auto; padding: 20px; }
-    .header { border-bottom: 2px solid #a85a3c; padding-bottom: 16px; margin-bottom: 24px; }
-    .header h1 { margin: 0; font-size: 24px; color: #1a1918; }
-    .field { margin-bottom: 16px; }
-    .label { font-weight: 600; color: #3e3d3c; }
-    .value { margin-top: 4px; }
-    .interests { background: #f9f7f5; padding: 16px; border-radius: 4px; }
-    .interests ul { margin: 8px 0 0 0; padding-left: 20px; }
-    .footer { margin-top: 32px; padding-top: 16px; border-top: 1px solid #6b6866; font-size: 14px; color: #6b6866; }
-  </style>
-</head>
-<body>
-  <div class="container">
-    <div class="header">
-      <h1>New Contact Form Submission</h1>
-    </div>
-    
-    <div class="field">
-      <div class="label">Name</div>
-      <div class="value">${escapeHtml(name.trim())}</div>
-    </div>
-    
-    <div class="field">
-      <div class="label">Email</div>
-      <div class="value"><a href="mailto:${escapeHtml(email.trim())}">${escapeHtml(email.trim())}</a></div>
-    </div>
-    
-    <div class="field interests">
-      <div class="label">Interests</div>
-      <ul>
-        ${interests.map(interest => `<li>${escapeHtml(interestLabels[interest] || interest)}</li>`).join('')}
-      </ul>
-    </div>
-    ${referredBy && referredBy.trim() ? `
-    <div class="field">
-      <div class="label">Referred by</div>
-      <div class="value">${escapeHtml(referredBy.trim())}</div>
-    </div>
-    ` : ''}
-    ${notes && notes.trim() ? `
-    <div class="field">
-      <div class="label">Notes</div>
-      <div class="value" style="white-space: pre-wrap;">${escapeHtml(notes.trim())}</div>
-    </div>
-    ` : ''}
-
-    <div class="footer">
-      This message was sent via the contact form at heatsynclabs.org
-    </div>
-  </div>
-</body>
-</html>
-        `.trim(),
+        email: email.trim(),
+        first_name: firstName,
+        last_name: lastName,
+        unsubscribed: false,
+        properties,
       }),
     });
 
-    if (!resendResponse.ok) {
-      const errorData = await resendResponse.json();
-      console.error('Resend API error:', errorData);
+    if (!createContactResponse.ok) {
+      const errorData = await createContactResponse.json();
+      console.error('Resend create contact error:', errorData);
       return new Response(
-        JSON.stringify({ error: 'Failed to send message. Please try again later.' }),
+        JSON.stringify({ error: 'Failed to submit. Please try again later.' }),
         { status: 500, headers }
       );
+    }
+
+    const contactData = await createContactResponse.json() as { id: string };
+    const contactId = contactData.id;
+
+    // Add contact to Prospects segment
+    const segmentResponse = await fetch(
+      `https://api.resend.com/contacts/${contactId}/segments/${PROSPECTS_SEGMENT_ID}`,
+      {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+      }
+    );
+
+    if (!segmentResponse.ok) {
+      const errorData = await segmentResponse.json();
+      console.error('Failed to add contact to Prospects segment:', errorData);
+    }
+
+    // Subscribe contact to topics based on interests
+    const topicSubscriptions = interests
+      .map(interest => {
+        const topicId = TOPICS[interest as InterestKey];
+        return topicId ? { id: topicId, subscription: 'opt_in' as const } : null;
+      })
+      .filter((topic) => topic !== null) as Array<{ id: string; subscription: string }>;
+
+    if (topicSubscriptions.length > 0) {
+      const topicsResponse = await fetch('https://api.resend.com/contacts/topics', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${env.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          id: contactId,
+          topics: topicSubscriptions,
+        }),
+      });
+
+      if (!topicsResponse.ok) {
+        const errorData = await topicsResponse.json();
+        console.error('Failed to update contact topics:', errorData);
+      }
     }
 
     return new Response(
@@ -197,15 +182,3 @@ function isValidEmail(email: string): boolean {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(email.trim());
 }
-
-function escapeHtml(text: string): string {
-  const htmlEntities: Record<string, string> = {
-    '&': '&amp;',
-    '<': '&lt;',
-    '>': '&gt;',
-    '"': '&quot;',
-    "'": '&#039;',
-  };
-  return text.replace(/[&<>"']/g, char => htmlEntities[char]);
-}
-
