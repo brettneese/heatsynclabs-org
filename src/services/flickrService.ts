@@ -4,44 +4,38 @@ export interface FlickrPhoto {
   url: string
   thumbnail: string
   link: string
-  farm: string
-  server: string
-  secret: string
 }
 
-// Flickr API configuration
-const FLICKR_API_KEY = 'bec64c9c0f28889dc6e0c5ef7be3511f'
+// Flickr RSS feed configuration (no API key needed)
 const FLICKR_USER_ID = '60827818@N07'
 
 export class FlickrService {
   async getPhotos(limit: number = 20): Promise<FlickrPhoto[]> {
     try {
-      // Use JSONP to bypass CORS - Flickr supports this natively
+      // Use RSS feed which doesn't require an API key
       const data = await this.fetchWithJsonp(limit)
 
-      if (data.stat !== 'ok' || !data.photos?.photo) {
+      if (!data.items || !Array.isArray(data.items)) {
         return []
       }
 
-      return data.photos.photo.slice(0, limit).map((photo: any): FlickrPhoto => {
-        const id = photo.id || ''
-        const title = photo.title || 'HeatSync Labs Photo'
-        const farm = photo.farm || ''
-        const server = photo.server || ''
-        const secret = photo.secret || ''
+      return data.items.slice(0, limit).map((item: any): FlickrPhoto => {
+        const title = item.title || 'HeatSync Labs Photo'
+        const link = item.link || ''
+        // Extract the photo ID from the link
+        const idMatch = link.match(/\/photos\/[^/]+\/(\d+)/)
+        const id = idMatch ? idMatch[1] : ''
 
-        // Build URLs using Flickr's URL structure
-        const baseUrl = `https://farm${farm}.staticflickr.com/${server}/${id}_${secret}`
+        // Get the image URL from media.m and upgrade to larger size
+        const thumbnailUrl = item.media?.m || ''
+        const url = thumbnailUrl.replace('_m.jpg', '_b.jpg')
 
         return {
           id,
           title,
-          url: `${baseUrl}_b.jpg`, // Large size
-          thumbnail: `${baseUrl}_m.jpg`, // Medium size for thumbnails
-          link: `https://www.flickr.com/photos/hslphotosync/${id}/in/photostream`,
-          farm,
-          server,
-          secret
+          url,
+          thumbnail: thumbnailUrl,
+          link
         }
       })
     } catch (error) {
@@ -79,7 +73,7 @@ export class FlickrService {
 
       // Create script element
       scriptElement = document.createElement('script')
-      scriptElement.src = `https://api.flickr.com/services/rest/?method=flickr.photos.search&api_key=${FLICKR_API_KEY}&user_id=${encodeURIComponent(FLICKR_USER_ID)}&tags=publish&format=json&jsoncallback=${callbackName}&per_page=${limit}`
+      scriptElement.src = `https://www.flickr.com/services/feeds/photos_public.gne?id=${encodeURIComponent(FLICKR_USER_ID)}&format=json&jsoncallback=${callbackName}&per_page=${limit}`
 
       scriptElement.onerror = () => {
         // Only reject if the callback hasn't already succeeded
