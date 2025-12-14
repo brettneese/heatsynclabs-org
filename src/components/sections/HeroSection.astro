@@ -2,7 +2,6 @@
 import BaseContainer from '../base/BaseContainer.astro';
 import BaseButton from '../base/BaseButton.astro';
 import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
-import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
 ---
 
 <section class="hero">
@@ -10,8 +9,10 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
     <div class="hero__wrapper">
       <div class="hero__content">
         <span class="hero__label">
-          <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
-          Downtown Mesa, AZ
+          <a href="https://maps.app.goo.gl/Qh3wZuQuik4U7niE6" target="_blank" rel="noopener">
+            <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
+            108 W Main St, Downtown Mesa, AZ
+          </a>
         </span>
 
         <h1 class="hero__headline">
@@ -71,13 +72,6 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
         </div>
       </div>
     </div>
-  </BaseContainer>
-</section>
-
-<!-- Mobile photo carousel - only visible on small screens, AFTER hero -->
-<section class="hero-mobile-photos">
-  <BaseContainer>
-    <MobilePhotoCarousel client:load />
   </BaseContainer>
 </section>
 
@@ -338,12 +332,6 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
     font-family: var(--font-mono);
   }
 
-  .hero-mobile-photos {
-    display: none;
-    padding: var(--space-8) 0;
-    background: var(--color-surface, var(--off-white));
-  }
-
   /* Responsive */
   @media (max-width: 1100px) {
     .hero__wrapper {
@@ -485,10 +473,6 @@ import MobilePhotoCarousel from '../graphics/MobilePhotoCarousel.vue';
     .year-badge {
       top: 10px;
       right: 15px;
-    }
-
-    .hero-mobile-photos {
-      display: block;
     }
   }
 </style>

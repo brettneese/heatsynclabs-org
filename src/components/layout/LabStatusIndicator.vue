@@ -1,5 +1,5 @@
 <template>
-  <div class="status-badge" :class="{ 'status-badge--loading': isLoading }">
+  <div class="status-badge" :class="{ 'status-badge--loading': isLoading, 'status-badge--open': isOpen && !isLoading, 'status-badge--closed': !isOpen && !isLoading }">
     <span class="status-dot" :class="statusClass"></span>
     <span class="status-text">{{ displayText }}</span>
   </div>
@@ -129,14 +129,20 @@ onUnmounted(() => {
   display: inline-flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
-  border: 1px solid var(--accent-sage);
+  padding: 5px 12px;
   font-size: 11px;
-  font-weight: 500;
+  font-weight: 600;
   letter-spacing: 0.5px;
-  color: var(--accent-sage);
   font-family: var(--font-mono);
   transition: all var(--transition-fast);
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+
+.status-badge.status-badge--loading {
+  border: 1px solid var(--warm-gray);
+  color: var(--warm-gray);
+  background: transparent;
 }
 
 .status-dot {
@@ -152,12 +158,12 @@ onUnmounted(() => {
 }
 
 .status-dot--open {
-  background: var(--accent-sage);
+  background: white;
   animation: pulse 2s ease-in-out infinite;
 }
 
 .status-dot--closed {
-  background: var(--warm-gray);
+  background: black;
 }
 
 @keyframes pulse {
@@ -165,15 +171,50 @@ onUnmounted(() => {
   50% { opacity: 0.4; }
 }
 
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(34, 197, 94, 0.5), 0 0 16px rgba(34, 197, 94, 0.3);
+  }
+  50% {
+    box-shadow: 0 0 14px rgba(34, 197, 94, 0.7), 0 0 28px rgba(34, 197, 94, 0.5);
+  }
+}
+
 .status-text {
   font-family: var(--font-mono);
   font-size: 11px;
 }
 
+/* Open state - white text on green with glow */
+.status-badge.status-badge--open {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  color: white;
+  border: none;
+  box-shadow: 0 0 8px rgba(34, 197, 94, 0.4), 0 2px 4px rgba(0, 0, 0, 0.1);
+  animation: glow 2s ease-in-out infinite;
+}
+
+.status-badge.status-badge--open .status-dot {
+  background: white;
+  box-shadow: 0 0 4px rgba(255, 255, 255, 0.8);
+}
+
+/* Closed state - black text with red outline */
+.status-badge.status-badge--closed {
+  background-color: transparent;
+  color: var(--ink-black);
+  border: 1.5px solid #ef4444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.status-badge.status-badge--closed .status-dot {
+  background: #ef4444;
+}
+
 /* Hover effect */
 .status-badge:hover {
-  background: rgba(122, 139, 127, 0.05);
   cursor: default;
+  opacity: 0.9;
 }
 
 /* Mobile adjustments */
