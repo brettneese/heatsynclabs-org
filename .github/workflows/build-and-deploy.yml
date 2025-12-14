@@ -2,9 +2,9 @@ name: Deploy to GitHub Pages
 
 on:
   push:
-    branches: [ main, gh-pages, update-from-heatsynclabs-org ]
+    branches: [ welcome-to-2025, main, gh-pages, update-from-heatsynclabs-org ]
   pull_request:
-    branches: [ main, gh-pages ]
+    branches: [ welcome-to-2025, main, gh-pages ]
   workflow_dispatch:
 
 permissions:

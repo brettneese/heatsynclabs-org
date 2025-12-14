@@ -7,11 +7,10 @@ import LabStatusIndicator from './LabStatusIndicator.vue';
 <header class="header">
   <BaseContainer>
     <nav class="nav">
-      <a href="/" class="nav__logo">
-        <HeatSyncLogo size="lg" />
-      </a>
-
-      <div class="nav__center">
+      <div class="nav__logo-group">
+        <a href="/" class="nav__logo">
+          <HeatSyncLogo />
+        </a>
         <LabStatusIndicator client:load class="nav__status" />
       </div>
 
@@ -70,14 +69,17 @@ import LabStatusIndicator from './LabStatusIndicator.vue';
 <script>
   const toggle = document.getElementById('mobile-toggle');
   const menu = document.getElementById('mobile-menu');
-  
+
   if (toggle && menu) {
+    // Initialize menu as hidden
+    menu.style.display = 'none';
+
     toggle.addEventListener('click', () => {
       const isOpen = toggle.getAttribute('aria-expanded') === 'true';
       toggle.setAttribute('aria-expanded', String(!isOpen));
       menu.style.display = isOpen ? 'none' : 'block';
     });
-    
+
     // Close menu when clicking a link
     const links = menu.querySelectorAll('.nav__mobile-link');
     links.forEach(link => {
@@ -85,6 +87,17 @@ import LabStatusIndicator from './LabStatusIndicator.vue';
         toggle.setAttribute('aria-expanded', 'false');
         menu.style.display = 'none';
       });
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', (e) => {
+      const target = e.target as HTMLElement;
+      if (!toggle.contains(target) && !menu.contains(target)) {
+        if (toggle.getAttribute('aria-expanded') === 'true') {
+          toggle.setAttribute('aria-expanded', 'false');
+          menu.style.display = 'none';
+        }
+      }
     });
   }
 </script>
@@ -100,27 +113,27 @@ import LabStatusIndicator from './LabStatusIndicator.vue';
   }
 
   .nav {
-    display: grid;
-    grid-template-columns: auto 1fr auto;
+    display: flex;
+    justify-content: space-between;
     align-items: center;
     height: var(--header-height);
     gap: var(--space-6);
   }
 
+  .nav__logo-group {
+    display: flex;
+    align-items: center;
+    gap: var(--space-3);
+  }
+
   .nav__logo {
     text-decoration: none;
     color: inherit;
-    justify-self: start;
-  }
-
-  .nav__center {
-    display: flex;
-    justify-content: center;
-    flex-shrink: 0;
   }
 
   .nav__status {
     display: inline-block;
+    margin-left: 10px;
   }
 
   .nav__links {
@@ -248,33 +261,26 @@ import LabStatusIndicator from './LabStatusIndicator.vue';
   }
 
   /* Responsive */
-  @media (max-width: 1200px) {
-    .nav__center {
-      display: none;
-    }
-  }
-
   @media (max-width: 768px) {
     .nav {
       display: flex;
       justify-content: space-between;
+      align-items: center;
     }
 
     .nav__links {
       display: none;
     }
 
-    .nav__center {
-      display: none;
+    .nav__logo-group {
+      gap: var(--space-2);
     }
 
     .nav__mobile-toggle {
       display: flex;
     }
 
-    .nav__mobile-menu {
-      display: block;
-    }
+    /* Mobile menu will be controlled by JavaScript */
   }
 
   /* Mobile toggle animation */

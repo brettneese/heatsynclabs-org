@@ -1,7 +1,7 @@
 <template>
-  <div class="lab-status" :class="{ 'lab-status--open': isOpen, 'lab-status--closed': !isOpen, 'lab-status--loading': isLoading }">
-    <span class="lab-status__dot"></span>
-    <span class="lab-status__text">{{ displayText }}</span>
+  <div class="status-badge" :class="{ 'status-badge--loading': isLoading, 'status-badge--open': isOpen && !isLoading, 'status-badge--closed': !isOpen && !isLoading }">
+    <span class="status-dot" :class="statusClass"></span>
+    <span class="status-text">{{ displayText }}</span>
   </div>
 </template>
 
@@ -16,9 +16,15 @@ const events = ref<any[]>([])
 let statusIntervalId: number | undefined
 let eventIntervalId: number | undefined
 
+const statusClass = computed(() => {
+  if (isLoading.value) return 'status-dot--loading'
+  if (isOpen.value) return 'status-dot--open'
+  return 'status-dot--closed'
+})
+
 const displayText = computed(() => {
   if (isLoading.value) return 'Checking...'
-  if (isOpen.value) return 'Open'
+  if (isOpen.value) return 'OPEN'
 
   // When closed, show next opening time if available
   const now = new Date()
@@ -34,10 +40,10 @@ const displayText = computed(() => {
     const nextOpen = new Date(upcomingOpenHours[0].start)
     const day = format(nextOpen, 'EEE')
     const time = format(nextOpen, 'ha').toLowerCase()
-    return `Closed · Opens ${day} ${time}`
+    return `Closed • Opens ${day} ${time}`
   }
 
-  return 'Closed'
+  return 'CLOSED'
 })
 
 const checkDoorStatus = async () => {
@@ -90,6 +96,26 @@ onMounted(() => {
 
   // Refresh events every 30 minutes
   eventIntervalId = window.setInterval(fetchEvents, 30 * 60 * 1000)
+
+  // Add console command for testing
+  ;(window as any).toggleDoorStatus = () => {
+    isOpen.value = !isOpen.value
+    isLoading.value = false
+    console.log(`Door status toggled to: ${isOpen.value ? 'OPEN' : 'CLOSED'}`)
+    return isOpen.value ? 'OPEN' : 'CLOSED'
+  }
+
+  // Add console command to set specific status
+  ;(window as any).setDoorStatus = (status: boolean) => {
+    isOpen.value = status
+    isLoading.value = false
+    console.log(`Door status set to: ${isOpen.value ? 'OPEN' : 'CLOSED'}`)
+    return isOpen.value ? 'OPEN' : 'CLOSED'
+  }
+
+  console.log('%c🛠️ Debug Commands Available:', 'color: #d35f35; font-weight: bold; font-size: 14px')
+  console.log('%ctoggleDoorStatus() - Toggle between open/closed', 'color: #7a8b7f')
+  console.log('%csetDoorStatus(true/false) - Set specific status', 'color: #7a8b7f')
 })
 
 onUnmounted(() => {
@@ -99,75 +125,109 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.lab-status {
+.status-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-full);
-  background: var(--off-white);
-  border: 1px solid var(--warm-gray);
-  transition: all var(--transition-base);
-  white-space: nowrap;
-  font-size: var(--text-xs);
-}
-
-.lab-status__dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  flex-shrink: 0;
-}
-
-.lab-status--open .lab-status__dot {
-  background: var(--success-green);
-  animation: pulse 2s infinite;
-}
-
-.lab-status--closed .lab-status__dot {
-  background: var(--warm-gray);
-}
-
-.lab-status--loading .lab-status__dot {
-  background: var(--warm-gray);
-  animation: pulse 1s infinite;
-}
-
-.lab-status__text {
+  gap: 6px;
+  padding: 5px 12px;
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
   font-family: var(--font-mono);
-  font-weight: var(--font-medium);
-  letter-spacing: var(--tracking-wide);
+  transition: all var(--transition-fast);
   text-transform: uppercase;
 }
 
-.lab-status--open .lab-status__text {
-  color: var(--success-green);
-}
-
-.lab-status--closed .lab-status__text {
-  color: var(--graphite);
-}
-
-.lab-status--loading .lab-status__text {
+.status-badge.status-badge--loading {
+  border: 1px solid var(--warm-gray);
   color: var(--warm-gray);
+  background: transparent;
+}
+
+.status-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  transition: background-color var(--transition-base);
+}
+
+.status-dot--loading {
+  background: var(--warm-gray);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot--open {
+  background: white;
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot--closed {
+  background: black;
 }
 
 @keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 0 8px rgba(134, 239, 172, 0.5), 0 0 16px rgba(134, 239, 172, 0.3);
   }
-  70% {
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
+  50% {
+    box-shadow: 0 0 14px rgba(134, 239, 172, 0.7), 0 0 28px rgba(134, 239, 172, 0.5);
   }
 }
 
+.status-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Open state - black text with green outline and glow */
+.status-badge.status-badge--open {
+  background-color: transparent;
+  color: var(--ink-black);
+  border: 1.5px solid #86efac;
+  animation: glow 2s ease-in-out infinite;
+}
+
+.status-badge.status-badge--open .status-dot {
+  background: #86efac;
+}
+
+/* Closed state - black text with red outline */
+.status-badge.status-badge--closed {
+  background-color: transparent;
+  color: var(--ink-black);
+  border: 1.5px solid #ef4444;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.status-badge.status-badge--closed .status-dot {
+  background: #ef4444;
+}
+
+/* Hover effect */
+.status-badge:hover {
+  cursor: default;
+  opacity: 0.9;
+}
+
 /* Mobile adjustments */
-@media (max-width: 480px) {
-  .lab-status {
-    display: none; /* Hide on mobile to save space */
+@media (max-width: 768px) {
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .status-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .status-text {
+    font-size: 10px;
   }
 }
 </style>

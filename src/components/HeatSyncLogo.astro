@@ -20,7 +20,6 @@ const logoClasses = [
 </div>
 
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Charis+SIL:wght@400;700&display=swap');
 
   .logo {
     display: flex;
@@ -42,8 +41,8 @@ const logoClasses = [
 
   .logo__text {
     white-space: nowrap;
-    font-family: 'Charis SIL', serif;
-    letter-spacing: 0.05em;
+    font-family: var(--font-serif);
+    font-weight: var(--font-semibold);
   }
 
   /* Sizes */
@@ -63,6 +62,12 @@ const logoClasses = [
 
   .logo--md .logo__text {
     font-size: var(--text-xl);
+  }
+
+  @media (max-width: 640px) {
+    .logo--md .logo__text {
+      font-size: var(--text-base);
+    }
   }
 
   .logo--lg .logo__mark {

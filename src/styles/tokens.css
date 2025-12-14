@@ -1,5 +1,7 @@
 /* Design Tokens - HeatSync Labs Design System */
 
+@import url('https://fonts.googleapis.com/css2?family=Charis+SIL:ital,wght@0,400;0,700;1,400;1,700&display=swap');
+
 :root {
   /* Color Palette - Muted, sophisticated palette inspired by paper and ink */
   --ink-black: #1a1918;
@@ -7,8 +9,9 @@
   --warm-gray: #6b6866;
   --paper-white: #f9f7f5;
   --cream: #fefcfa;
-  --accent-rust: #a85a3c;
+  --accent-rust: #d35f35;
   --accent-sage: #7a8b7f;
+  --highlight: #e8c47a;
   --off-white: #fcfcfc;
   --success-green: #10b981;
   --error-red: #ef4444;
@@ -21,6 +24,7 @@
   /* Typography Scale */
   --font-mono: 'IBM Plex Mono', 'SF Mono', 'Consolas', monospace;
   --font-sans: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  --font-serif: 'Charis SIL', Georgia, serif;
 
   /* Font Sizes */
   --text-xs: 12px;
