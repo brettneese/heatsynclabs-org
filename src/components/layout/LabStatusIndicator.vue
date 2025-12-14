@@ -1,7 +1,7 @@
 <template>
-  <div class="lab-status" :class="{ 'lab-status--open': isOpen, 'lab-status--closed': !isOpen, 'lab-status--loading': isLoading }">
-    <span class="lab-status__dot"></span>
-    <span class="lab-status__text">{{ displayText }}</span>
+  <div class="status-badge" :class="{ 'status-badge--loading': isLoading }">
+    <span class="status-dot" :class="statusClass"></span>
+    <span class="status-text">{{ displayText }}</span>
   </div>
 </template>
 
@@ -16,9 +16,15 @@ const events = ref<any[]>([])
 let statusIntervalId: number | undefined
 let eventIntervalId: number | undefined
 
+const statusClass = computed(() => {
+  if (isLoading.value) return 'status-dot--loading'
+  if (isOpen.value) return 'status-dot--open'
+  return 'status-dot--closed'
+})
+
 const displayText = computed(() => {
   if (isLoading.value) return 'Checking...'
-  if (isOpen.value) return 'Open'
+  if (isOpen.value) return 'OPEN'
 
   // When closed, show next opening time if available
   const now = new Date()
@@ -34,10 +40,10 @@ const displayText = computed(() => {
     const nextOpen = new Date(upcomingOpenHours[0].start)
     const day = format(nextOpen, 'EEE')
     const time = format(nextOpen, 'ha').toLowerCase()
-    return `Closed · Opens ${day} ${time}`
+    return `Closed • Opens ${day} ${time}`
   }
 
-  return 'Closed'
+  return 'CLOSED'
 })
 
 const checkDoorStatus = async () => {
@@ -90,6 +96,26 @@ onMounted(() => {
 
   // Refresh events every 30 minutes
   eventIntervalId = window.setInterval(fetchEvents, 30 * 60 * 1000)
+
+  // Add console command for testing
+  ;(window as any).toggleDoorStatus = () => {
+    isOpen.value = !isOpen.value
+    isLoading.value = false
+    console.log(`Door status toggled to: ${isOpen.value ? 'OPEN' : 'CLOSED'}`)
+    return isOpen.value ? 'OPEN' : 'CLOSED'
+  }
+
+  // Add console command to set specific status
+  ;(window as any).setDoorStatus = (status: boolean) => {
+    isOpen.value = status
+    isLoading.value = false
+    console.log(`Door status set to: ${isOpen.value ? 'OPEN' : 'CLOSED'}`)
+    return isOpen.value ? 'OPEN' : 'CLOSED'
+  }
+
+  console.log('%c🛠️ Debug Commands Available:', 'color: #d35f35; font-weight: bold; font-size: 14px')
+  console.log('%ctoggleDoorStatus() - Toggle between open/closed', 'color: #7a8b7f')
+  console.log('%csetDoorStatus(true/false) - Set specific status', 'color: #7a8b7f')
 })
 
 onUnmounted(() => {
@@ -99,75 +125,71 @@ onUnmounted(() => {
 </script>
 
 <style scoped>
-.lab-status {
+.status-badge {
   display: inline-flex;
   align-items: center;
-  gap: var(--space-1);
-  padding: var(--space-1) var(--space-2);
-  border-radius: var(--radius-full);
-  background: var(--off-white);
-  border: 1px solid var(--warm-gray);
-  transition: all var(--transition-base);
-  white-space: nowrap;
-  font-size: var(--text-xs);
+  gap: 6px;
+  padding: 4px 10px;
+  border: 1px solid var(--accent-sage);
+  font-size: 11px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+  color: var(--accent-sage);
+  font-family: var(--font-mono);
+  transition: all var(--transition-fast);
 }
 
-.lab-status__dot {
+.status-dot {
   width: 6px;
   height: 6px;
   border-radius: 50%;
-  flex-shrink: 0;
+  transition: background-color var(--transition-base);
 }
 
-.lab-status--open .lab-status__dot {
-  background: var(--success-green);
-  animation: pulse 2s infinite;
-}
-
-.lab-status--closed .lab-status__dot {
+.status-dot--loading {
   background: var(--warm-gray);
+  animation: pulse 2s ease-in-out infinite;
 }
 
-.lab-status--loading .lab-status__dot {
+.status-dot--open {
+  background: var(--accent-sage);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.status-dot--closed {
   background: var(--warm-gray);
-  animation: pulse 1s infinite;
-}
-
-.lab-status__text {
-  font-family: var(--font-mono);
-  font-weight: var(--font-medium);
-  letter-spacing: var(--tracking-wide);
-  text-transform: uppercase;
-}
-
-.lab-status--open .lab-status__text {
-  color: var(--success-green);
-}
-
-.lab-status--closed .lab-status__text {
-  color: var(--graphite);
-}
-
-.lab-status--loading .lab-status__text {
-  color: var(--warm-gray);
 }
 
 @keyframes pulse {
-  0% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.4);
-  }
-  70% {
-    box-shadow: 0 0 0 6px rgba(16, 185, 129, 0);
-  }
-  100% {
-    box-shadow: 0 0 0 0 rgba(16, 185, 129, 0);
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.4; }
+}
+
+.status-text {
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+/* Hover effect */
+.status-badge:hover {
+  background: rgba(122, 139, 127, 0.05);
+  cursor: default;
 }
 
 /* Mobile adjustments */
-@media (max-width: 480px) {
-  .lab-status {
-    display: none; /* Hide on mobile to save space */
+@media (max-width: 768px) {
+  .status-badge {
+    font-size: 10px;
+    padding: 3px 8px;
+  }
+
+  .status-dot {
+    width: 5px;
+    height: 5px;
+  }
+
+  .status-text {
+    font-size: 10px;
   }
 }
 </style>
