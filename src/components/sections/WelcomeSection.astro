@@ -32,18 +32,21 @@ import BaseContainer from '../base/BaseContainer.astro';
         </div>
 
         <div class="welcome-aside">
-          <h3 class="welcome-subtitle">We welcome and encourage:</h3>
+          <div class="welcome-statement">
+            <p>
+              We're a community space for learning, building, and making things together.
+              <strong>Everyone is welcome.</strong>
+            </p>
 
-          <ul class="welcome-list">
-            <li>LGBTQ+ makers</li>
-            <li>Makers of color</li>
-            <li>Women and nonbinary folks</li>
-            <li>Neurodivergent people</li>
-            <li>Young makers and makers who are young at heart </li>
-            <li>Beginners who've never touched a tool</li>
-            <li>Anyone ready to learn and build</li>
-            <li>Anyone looking to MAKE COOL STUFF TOGETHER</li>
-          </ul>
+            <p>
+              We actively support a diverse community. This includes, but is not limited to, LGBTQ+ makers, women and nonbinary folks,
+              makers of color, people with disabilities, neurodivergent people, beginners, and first-time makers.
+            </p>
+
+            <p>
+              All that's expected is curiosity, respect for others, and a willingness to build together.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -102,38 +105,28 @@ import BaseContainer from '../base/BaseContainer.astro';
     border-left: 1px solid var(--warm-gray);
   }
 
-  .welcome-subtitle {
+  .welcome-statement p {
     font-size: var(--text-sm);
-    font-weight: var(--font-semibold);
+    line-height: var(--leading-relaxed);
     color: var(--graphite);
     margin-bottom: var(--space-4);
-    font-family: var(--font-mono);
-    letter-spacing: var(--tracking-wider);
-    text-transform: uppercase;
-  }
-
-  .welcome-list {
-    list-style: none;
-    padding: 0;
-    margin: 0;
-    display: flex;
-    flex-direction: column;
-    gap: var(--space-3);
-  }
-
-  .welcome-list li {
-    font-size: var(--text-base);
     font-family: var(--font-sans);
-    color: var(--ink-black);
-    position: relative;
-    padding-left: var(--space-4);
   }
 
-  .welcome-list li::before {
-    content: '—';
-    position: absolute;
-    left: 0;
+  .welcome-statement p:first-child {
+    font-size: var(--text-base);
+    color: var(--ink-black);
+  }
+
+  .welcome-statement strong {
+    font-weight: var(--font-semibold);
     color: var(--accent-rust);
+  }
+
+  .welcome-statement p:last-child {
+    color: var(--ink-black);
+    font-weight: var(--font-medium);
+    margin-bottom: 0;
   }
 
   .welcome-link {
@@ -167,12 +160,6 @@ import BaseContainer from '../base/BaseContainer.astro';
       border-left: none;
       border-top: 1px solid var(--warm-gray);
     }
-
-    .welcome-list {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: var(--space-2) var(--space-6);
-    }
   }
 
   @media (max-width: 768px) {
@@ -184,9 +171,12 @@ import BaseContainer from '../base/BaseContainer.astro';
       font-size: var(--text-2xl);
     }
 
-    .welcome-list {
-      grid-template-columns: 1fr;
-      gap: var(--space-2);
+    .welcome-statement p {
+      font-size: var(--text-xs);
+    }
+
+    .welcome-statement p:first-child {
+      font-size: var(--text-sm);
     }
   }
 
@@ -197,10 +187,6 @@ import BaseContainer from '../base/BaseContainer.astro';
     }
 
     .welcome-intro {
-      font-size: var(--text-sm);
-    }
-
-    .welcome-list li {
       font-size: var(--text-sm);
     }
 
