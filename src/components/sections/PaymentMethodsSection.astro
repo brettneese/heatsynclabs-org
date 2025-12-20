@@ -6,17 +6,8 @@ const logos = {
   zelle: '/zelle-icon.svg',
   zeffy: '/zeffy-icon.svg',
   paypal: '/paypal.svg',
-  // Cash and Check use inline SVGs as fallback
-  check: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="24" height="24" rx="4" fill="#4A5568"/>
-    <rect x="4" y="7" width="16" height="10" rx="1" stroke="white" stroke-width="1.5"/>
-    <line x1="4" y1="11" x2="20" y2="11" stroke="white" stroke-width="1.5"/>
-    <line x1="7" y1="14" x2="12" y2="14" stroke="white" stroke-width="1.5"/>
-  </svg>`,
-  cash: `<svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-    <rect width="24" height="24" rx="4" fill="#38A169"/>
-    <text x="12" y="18" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="white" text-anchor="middle">$</text>
-  </svg>`
+  check: '/check-icon.svg',
+  cash: '/cash-icon.svg'
 };
 
 // Payment methods data
@@ -73,7 +64,7 @@ const paymentMethods = [
     featured: false,
     description: 'Yes, people still use these and yes, we still accept them.',
     pros: ['No processing fees', 'Paper trail for records'],
-    cons: ['You have to have a check'],
+    cons: ['You have to have a check', 'Someone from HSL has to deposit the check at Bank of America'],
     tips: ['Make payable to "HeatSync Labs"', 'Include your email for receipt'],
     link: undefined,
     linkText: undefined
@@ -90,7 +81,7 @@ const paymentMethods = [
       </p>
       <div class="payment-section__print-options">
         <button class="print-btn" id="print-compact">Print (Compact)</button>
-        <button class="print-btn" id="print-full">Print (Full Page)</button>
+        <button class="print-btn" id="print-full">Print (One Method Per Page)</button>
       </div>
     </header>
 
@@ -349,13 +340,25 @@ const paymentMethods = [
     }
 
     body.print-full-page .payment-card__icon {
-      width: 80px;
-      height: 80px;
+      width: 120px;
+      height: 120px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
     }
 
     body.print-full-page .payment-card__icon :global(svg) {
-      width: 80px;
-      height: 80px;
+      width: 120px;
+      height: 120px;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
+    }
+
+    body.print-full-page .payment-card__icon :global(svg *) {
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+      color-adjust: exact;
     }
 
     body.print-full-page .payment-card__icon--image {
