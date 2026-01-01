@@ -451,6 +451,10 @@ const isImagePath = icon.startsWith('/');
       font-size: var(--text-xs);
     }
 
+    .payment-card__tips {
+      margin-bottom: var(--space-4);
+    }
+
     .payment-card__button {
       background: transparent;
       color: var(--ink-black);
@@ -484,14 +488,14 @@ const isImagePath = icon.startsWith('/');
       display: flex;
       position: absolute;
       bottom: 0;
-      right: 0;
+      left: 0;
     }
 
     .payment-card__qr--static {
       display: flex;
       position: absolute;
       bottom: var(--space-3);
-      right: var(--space-3);
+      left: var(--space-3);
     }
 
     /* Add padding for cards with static QR codes (compact mode only) */

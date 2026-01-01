@@ -19,6 +19,16 @@ const { title = 'HeatSync Labs' } = Astro.props;
     <meta name="description" content="HeatSync Labs - Arizona's Community Hackerspace" />
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.ico" />
+
+    <!-- Theme detection (runs before CSS to prevent flash) -->
+    <script is:inline>
+      (function() {
+        const stored = localStorage.getItem('theme-preference');
+        const systemDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+        const theme = stored || (systemDark ? 'dark' : 'light');
+        document.documentElement.setAttribute('data-theme', theme);
+      })();
+    </script>
     <meta name="generator" content={Astro.generator} />
 
     <!-- Google Fonts -->
@@ -42,6 +52,7 @@ const { title = 'HeatSync Labs' } = Astro.props;
 <style>
   html {
     font-family: var(--font-mono);
+    transition: background-color var(--transition-base), color var(--transition-base);
   }
 
   body {
@@ -49,13 +60,14 @@ const { title = 'HeatSync Labs' } = Astro.props;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    background-color: var(--paper-white);
-    color: var(--ink-black);
+    background-color: var(--color-bg-primary);
+    color: var(--color-text-primary);
     line-height: 1.6;
     position: relative;
+    transition: background-color var(--transition-base), color var(--transition-base);
   }
 
-  /* Paper texture overlay */
+  /* Paper texture overlay - light mode */
   body::before {
     content: '';
     position: fixed;
@@ -82,6 +94,27 @@ const { title = 'HeatSync Labs' } = Astro.props;
       );
     background-size: 100px 100px;
     pointer-events: none;
+    transition: opacity var(--transition-base);
+  }
+
+  /* Paper texture overlay - dark mode (inverted) */
+  :global([data-theme="dark"]) body::before {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 35px,
+        rgba(255,255,255,.02) 35px,
+        rgba(255,255,255,.02) 70px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 35px,
+        rgba(255,255,255,.03) 35px,
+        rgba(255,255,255,.03) 70px
+      );
+    opacity: 0.3;
   }
 
   #app {

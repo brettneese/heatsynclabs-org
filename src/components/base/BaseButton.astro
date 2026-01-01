@@ -41,7 +41,7 @@ const attrs = href ? { href } : {};
   }
 
   .btn:focus-visible {
-    outline: 2px solid var(--accent-rust);
+    outline: 2px solid var(--color-accent-primary);
     outline-offset: 2px;
   }
 
@@ -68,36 +68,41 @@ const attrs = href ? { href } : {};
   .btn--primary {
     background: var(--ink-black);
     color: var(--cream);
-    box-shadow: 2px 2px 8px var(--shadow-light);
+    box-shadow: 2px 2px 8px var(--color-shadow);
+  }
+
+  :global([data-theme="dark"]) .btn--primary {
+    background: var(--warm-cream);
+    color: var(--charcoal-deep);
   }
 
   .btn--primary:hover:not(.btn--disabled) {
     transform: translate(-2px, -2px);
-    box-shadow: 4px 4px 12px var(--shadow-medium);
+    box-shadow: 4px 4px 12px var(--color-shadow-medium);
   }
 
   .btn--secondary {
     background: transparent;
-    color: var(--graphite);
-    border-color: var(--graphite);
+    color: var(--color-text-secondary);
+    border-color: var(--color-text-secondary);
   }
 
   .btn--secondary:hover:not(.btn--disabled) {
-    background: var(--graphite);
-    color: var(--cream);
+    background: var(--color-text-secondary);
+    color: var(--color-bg-secondary);
   }
 
   .btn--outline {
-    background: var(--cream);
-    color: var(--ink-black);
-    border-color: var(--warm-gray);
-    box-shadow: 2px 2px 8px var(--shadow-light);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
+    border-color: var(--color-border);
+    box-shadow: 2px 2px 8px var(--color-shadow);
   }
 
   .btn--outline:hover:not(.btn--disabled) {
     transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 10px var(--shadow-medium);
-    border-color: var(--accent-rust);
+    box-shadow: 3px 3px 10px var(--color-shadow-medium);
+    border-color: var(--color-accent-primary);
   }
 
   /* Disabled state */
@@ -110,7 +115,7 @@ const attrs = href ? { href } : {};
   /* Active/pressed state */
   .btn:active:not(.btn--disabled) {
     transform: translate(0, 0);
-    box-shadow: 1px 1px 4px var(--shadow-light);
+    box-shadow: 1px 1px 4px var(--color-shadow);
   }
 </style>
 

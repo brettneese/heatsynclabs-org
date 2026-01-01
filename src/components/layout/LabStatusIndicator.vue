@@ -139,8 +139,8 @@ onUnmounted(() => {
 }
 
 .status-badge.status-badge--loading {
-  border: 1px solid var(--warm-gray);
-  color: var(--warm-gray);
+  border: 1px solid var(--color-text-tertiary);
+  color: var(--color-text-tertiary);
   background: transparent;
 }
 
@@ -152,17 +152,17 @@ onUnmounted(() => {
 }
 
 .status-dot--loading {
-  background: var(--warm-gray);
+  background: var(--color-text-tertiary);
   animation: pulse 2s ease-in-out infinite;
 }
 
 .status-dot--open {
-  background: white;
+  background: #86efac;
   animation: pulse 2s ease-in-out infinite;
 }
 
 .status-dot--closed {
-  background: black;
+  background: #ef4444;
 }
 
 @keyframes pulse {
@@ -184,10 +184,10 @@ onUnmounted(() => {
   font-size: 11px;
 }
 
-/* Open state - black text with green outline and glow */
+/* Open state - text with green outline and glow */
 .status-badge.status-badge--open {
   background-color: transparent;
-  color: var(--ink-black);
+  color: var(--color-text-primary);
   border: 1.5px solid #86efac;
   animation: glow 2s ease-in-out infinite;
 }
@@ -196,12 +196,12 @@ onUnmounted(() => {
   background: #86efac;
 }
 
-/* Closed state - black text with red outline */
+/* Closed state - text with red outline */
 .status-badge.status-badge--closed {
   background-color: transparent;
-  color: var(--ink-black);
+  color: var(--color-text-primary);
   border: 1.5px solid #ef4444;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  box-shadow: 0 1px 3px var(--color-shadow);
 }
 
 .status-badge.status-badge--closed .status-dot {

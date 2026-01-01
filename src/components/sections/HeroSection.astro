@@ -84,7 +84,8 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     min-height: calc(100vh - var(--header-height));
     display: flex;
     align-items: center;
-    background: var(--paper-white);
+    background: var(--color-bg-primary);
+    transition: background-color var(--transition-base);
   }
 
   .hero::before {
@@ -115,6 +116,25 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     pointer-events: none;
   }
 
+  :global([data-theme="dark"]) .hero::before {
+    background-image:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 35px,
+        rgba(255,255,255,.02) 35px,
+        rgba(255,255,255,.02) 70px
+      ),
+      repeating-linear-gradient(
+        -45deg,
+        transparent,
+        transparent 35px,
+        rgba(255,255,255,.03) 35px,
+        rgba(255,255,255,.03) 70px
+      );
+    opacity: 0.3;
+  }
+
   .hero .container {
     position: relative;
     z-index: var(--z-raised);
@@ -140,7 +160,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     font-size: var(--text-xs);
     letter-spacing: var(--tracking-wider);
     text-transform: uppercase;
-    color: var(--warm-gray);
+    color: var(--color-text-tertiary);
     margin-bottom: var(--space-4);
     font-family: var(--font-mono);
   }
@@ -161,7 +181,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
 
   .hero__headline strong {
     font-weight: var(--font-semibold);
-    color: var(--accent-rust);
+    color: var(--color-accent-primary);
     position: relative;
     display: inline-block;
   }
@@ -173,7 +193,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     left: -4px;
     right: -4px;
     height: 12px;
-    background: var(--highlight);
+    background: var(--color-highlight);
     opacity: 0.5;
     z-index: -1;
     transform: rotate(-1deg);
@@ -181,7 +201,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
 
   .hero__subtitle {
     font-size: var(--text-base);
-    color: var(--warm-gray);
+    color: var(--color-text-tertiary);
     font-weight: var(--font-normal);
     margin-bottom: var(--space-5);
     line-height: 1.5;
@@ -191,13 +211,13 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
   .hero__pitch {
     font-size: 15px;
     line-height: 1.7;
-    color: var(--warm-gray);
+    color: var(--color-text-tertiary);
     margin-bottom: var(--space-8);
     font-family: var(--font-sans);
   }
 
   .hero__pitch strong {
-    color: var(--ink-black);
+    color: var(--color-text-primary);
     font-weight: var(--font-semibold);
   }
 
@@ -214,7 +234,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     display: flex;
     gap: var(--space-6);
     padding-top: var(--space-6);
-    border-top: 1px solid rgba(107, 104, 102, 0.2);
+    border-top: 1px solid var(--color-border-light);
   }
 
   .stat {
@@ -227,13 +247,13 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     font-family: var(--font-mono);
     font-size: 20px;
     font-weight: var(--font-semibold);
-    color: var(--accent-rust);
+    color: var(--color-accent-primary);
     line-height: 1;
   }
 
   .stat-label {
     font-size: 10px;
-    color: var(--warm-gray);
+    color: var(--color-text-tertiary);
     text-transform: uppercase;
     letter-spacing: 0.5px;
     font-family: var(--font-sans);
@@ -320,16 +340,17 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     position: absolute;
     top: 25px;
     right: 40px;
-    background: var(--cream);
-    color: var(--ink-black);
+    background: var(--color-bg-secondary);
+    color: var(--color-text-primary);
     padding: 6px 12px;
     font-size: 11px;
     font-weight: var(--font-semibold);
     letter-spacing: 0.5px;
     transform: rotate(3deg);
     z-index: 20;
-    box-shadow: 2px 2px 8px var(--shadow-light);
+    box-shadow: 2px 2px 8px var(--color-shadow);
     font-family: var(--font-mono);
+    transition: background-color var(--transition-base), color var(--transition-base);
   }
 
   /* Responsive */

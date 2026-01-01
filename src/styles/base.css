@@ -17,12 +17,13 @@ html {
 }
 
 body {
-  background-color: var(--paper-white);
-  color: var(--ink-black);
+  background-color: var(--color-bg-primary);
+  color: var(--color-text-primary);
   font-size: var(--text-base);
   line-height: var(--leading-relaxed);
   min-height: 100vh;
   position: relative;
+  transition: background-color var(--transition-base), color var(--transition-base);
 }
 
 /* Remove paper texture - keep it clean like mockup */
@@ -32,7 +33,7 @@ h1, h2, h3, h4, h5, h6 {
   font-family: var(--font-sans);
   font-weight: var(--font-normal);
   line-height: var(--leading-tight);
-  color: var(--ink-black);
+  color: var(--color-text-primary);
 }
 
 p, li, span {
@@ -69,14 +70,14 @@ img {
 
 /* Focus styles */
 *:focus-visible {
-  outline: 2px solid var(--accent-rust);
+  outline: 2px solid var(--color-accent-primary);
   outline-offset: 2px;
 }
 
 /* Selection styles */
 ::selection {
-  background-color: var(--accent-rust);
-  color: var(--cream);
+  background-color: var(--color-accent-primary);
+  color: var(--color-bg-secondary);
 }
 
 /* Scrollbar styles */
@@ -85,14 +86,14 @@ img {
 }
 
 ::-webkit-scrollbar-track {
-  background: var(--paper-white);
+  background: var(--color-bg-primary);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: var(--warm-gray);
+  background: var(--color-border);
   border-radius: var(--radius-lg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: var(--graphite);
+  background: var(--color-text-secondary);
 }
