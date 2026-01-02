@@ -120,12 +120,12 @@ const isImagePath = icon.startsWith('/');
 
 <style>
   .payment-card {
-    background: var(--cream);
+    background: var(--color-bg-secondary);
     border-radius: var(--radius-base);
     padding: var(--space-5);
     position: relative;
     transition: transform var(--transition-base), box-shadow var(--transition-base);
-    box-shadow: 3px 3px 12px var(--shadow-light);
+    box-shadow: 3px 3px 12px var(--color-shadow);
     display: flex;
     flex-direction: column;
     gap: var(--space-3);
@@ -138,13 +138,13 @@ const isImagePath = icon.startsWith('/');
     left: 0;
     width: 100%;
     height: 2px;
-    background: var(--accent-sage);
+    background: var(--color-accent-secondary);
     border-radius: var(--radius-base) var(--radius-base) 0 0;
   }
 
   .payment-card--featured {
-    box-shadow: 4px 4px 16px var(--shadow-medium);
-    border: 2px solid var(--accent-rust);
+    box-shadow: 4px 4px 16px var(--color-shadow-medium);
+    border: 2px solid var(--color-accent-primary);
   }
 
   .payment-card--featured::before {
@@ -189,7 +189,7 @@ const isImagePath = icon.startsWith('/');
     font-family: var(--font-mono);
     font-size: var(--text-lg);
     font-weight: var(--font-semibold);
-    color: var(--ink-black);
+    color: var(--color-text-primary);
     margin: 0;
     flex-grow: 1;
   }
@@ -198,8 +198,8 @@ const isImagePath = icon.startsWith('/');
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: var(--font-medium);
-    color: var(--cream);
-    background: var(--accent-rust);
+    color: var(--color-bg-secondary);
+    background: var(--color-accent-primary);
     padding: 2px 8px;
     border-radius: var(--radius-full);
     text-transform: uppercase;
@@ -209,7 +209,7 @@ const isImagePath = icon.startsWith('/');
   .payment-card__description {
     font-family: var(--font-mono);
     font-size: var(--text-sm);
-    color: var(--graphite);
+    color: var(--color-text-secondary);
     line-height: var(--leading-relaxed);
     margin: 0;
   }
@@ -218,8 +218,8 @@ const isImagePath = icon.startsWith('/');
     display: flex;
     align-items: center;
     gap: var(--space-2);
-    background: var(--paper-white);
-    border: 2px dashed var(--accent-rust);
+    background: var(--color-bg-primary);
+    border: 2px dashed var(--color-accent-primary);
     border-radius: var(--radius-base);
     padding: var(--space-3) var(--space-4);
     flex-wrap: wrap;
@@ -229,14 +229,14 @@ const isImagePath = icon.startsWith('/');
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     font-weight: var(--font-semibold);
-    color: var(--graphite);
+    color: var(--color-text-secondary);
   }
 
   .payment-card__recipient-value {
     font-family: var(--font-mono);
     font-size: var(--text-base);
     font-weight: var(--font-bold);
-    color: var(--accent-rust);
+    color: var(--color-accent-primary);
     text-decoration: none;
     word-break: break-all;
   }
@@ -252,8 +252,8 @@ const isImagePath = icon.startsWith('/');
     font-family: var(--font-mono);
     font-size: var(--text-xs);
     font-weight: var(--font-medium);
-    color: var(--cream);
-    background: var(--ink-black);
+    color: var(--color-bg-secondary);
+    background: var(--color-text-primary);
     border: none;
     padding: var(--space-1) var(--space-2);
     border-radius: var(--radius-sm);
@@ -263,7 +263,7 @@ const isImagePath = icon.startsWith('/');
   }
 
   .payment-card__copy:hover {
-    background: var(--accent-rust);
+    background: var(--color-accent-primary);
   }
 
   .payment-card__copy-text {
@@ -293,13 +293,13 @@ const isImagePath = icon.startsWith('/');
   }
 
   .payment-card__qr img {
-    border: 1px solid var(--warm-gray);
+    border: 1px solid var(--color-border);
   }
 
   .payment-card__qr-label {
     font-family: var(--font-mono);
     font-size: var(--text-xs);
-    color: var(--graphite);
+    color: var(--color-text-secondary);
   }
 
   .payment-card__details {
@@ -333,7 +333,7 @@ const isImagePath = icon.startsWith('/');
   }
 
   .payment-card__label--tips {
-    color: var(--accent-sage);
+    color: var(--color-accent-secondary);
   }
 
   .payment-card__pros ul,
@@ -349,7 +349,7 @@ const isImagePath = icon.startsWith('/');
   .payment-card__tips li {
     font-family: var(--font-mono);
     font-size: var(--text-xs);
-    color: var(--graphite);
+    color: var(--color-text-secondary);
     line-height: var(--leading-normal);
     padding-left: var(--space-3);
     position: relative;
@@ -375,7 +375,7 @@ const isImagePath = icon.startsWith('/');
     content: '→';
     position: absolute;
     left: 0;
-    color: var(--accent-sage);
+    color: var(--color-accent-secondary);
   }
 
   .payment-card__button {
@@ -386,8 +386,8 @@ const isImagePath = icon.startsWith('/');
     font-family: var(--font-mono);
     font-size: var(--text-sm);
     font-weight: var(--font-medium);
-    color: var(--cream);
-    background: var(--accent-rust);
+    color: var(--color-bg-secondary);
+    background: var(--color-accent-primary);
     padding: var(--space-2) var(--space-4);
     border-radius: var(--radius-base);
     text-decoration: none;
@@ -395,7 +395,7 @@ const isImagePath = icon.startsWith('/');
   }
 
   .payment-card__button:hover {
-    background: var(--ink-black);
+    background: var(--color-text-primary);
     transform: translateY(-1px);
   }
 
