@@ -20,6 +20,7 @@ const infoItems = [
 
 <section class="info-section">
   <BaseContainer>
+    <h2 class="section-header">About Us</h2>
     <div class="info-grid">
       {infoItems.map((item) => (
         <BaseCard hoverable class="info-card">
@@ -33,7 +34,15 @@ const infoItems = [
 
 <style>
   .info-section {
-    padding: var(--space-20) 0;
+    padding: var(--space-2) 0 var(--space-12) 0;
+  }
+
+  .section-header {
+    font-size: var(--text-2xl);
+    font-weight: var(--font-normal);
+    margin-bottom: var(--space-4);
+    text-align: center;
+    color: var(--ink-black);
   }
 
   .info-grid {
@@ -60,7 +69,7 @@ const infoItems = [
   /* Responsive adjustments */
   @media (max-width: 768px) {
     .info-section {
-      padding: var(--space-16) 0;
+      padding: var(--space-12) 0;
     }
 
     .info-grid {

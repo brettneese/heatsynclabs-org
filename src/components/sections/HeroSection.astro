@@ -89,7 +89,7 @@ import LabStatusIndicator from '../layout/LabStatusIndicator.vue';
 
 
 <script>
-  // Hero logo scroll animation
+  // Hero logo scroll animation (desktop only - mobile handled via CSS)
   (() => {
     const heroLogo = document.getElementById('hero-logo');
     const heroStatus = document.getElementById('hero-status');
@@ -207,6 +207,13 @@ import LabStatusIndicator from '../layout/LabStatusIndicator.vue';
   @media (max-width: 900px) {
     .hero__logo {
       justify-content: center;
+    }
+  }
+
+  @media (max-width: 768px) {
+    .hero__logo,
+    .hero__status {
+      display: none;
     }
   }
 

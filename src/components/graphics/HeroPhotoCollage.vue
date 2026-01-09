@@ -12,10 +12,17 @@
       :data-images="JSON.stringify(photo.images)"
     >
       <div v-if="tapes.includes(index + 1)" class="tape"></div>
-      <img
-        :src="photo.currentImage"
-        :alt="`Workshop activity ${index + 1}`"
-      />
+      <div class="photo-stack">
+        <img
+          class="photo-current"
+          :src="photo.currentImage"
+          :alt="`Workshop activity ${index + 1}`"
+        />
+        <img
+          class="photo-next"
+          alt=""
+        />
+      </div>
       <div v-if="scribbles[index + 1]" class="scribble">{{ scribbles[index + 1] }}</div>
     </div>
   </div>
@@ -42,13 +49,17 @@ let rotationIntervals: number[] = []
 
 const initPhotos = async () => {
   try {
-    const fetchedPhotos = await flickrService.getPhotos(25)
+    // Flickr RSS feed returns max 20 photos
+    const fetchedPhotos = await flickrService.getPhotos(20)
 
-    // Group photos into 5 sets with multiple images each
+    // Group photos into 5 sets, distributing evenly
     const photoGroups: PhotoItem[] = []
-    for (let i = 0; i < 5; i++) {
-      const startIdx = i * 5
-      const groupImages = fetchedPhotos.slice(startIdx, startIdx + 5).map(p => p.url)
+    const numGroups = 5
+    const photosPerGroup = Math.ceil(fetchedPhotos.length / numGroups)
+
+    for (let i = 0; i < numGroups; i++) {
+      const startIdx = i * photosPerGroup
+      const groupImages = fetchedPhotos.slice(startIdx, startIdx + photosPerGroup).map(p => p.url)
 
       if (groupImages.length > 0) {
         photoGroups.push({
@@ -62,8 +73,8 @@ const initPhotos = async () => {
     // Fill in with placeholder images if not enough photos
     while (photoGroups.length < 5) {
       photoGroups.push({
-        images: ['/images/placeholder.jpg'],
-        currentImage: '/images/placeholder.jpg',
+        images: ['/hsl-logo.png'],
+        currentImage: '/hsl-logo.png',
         currentIndex: 0
       })
     }
@@ -74,8 +85,8 @@ const initPhotos = async () => {
     console.error('Failed to load photos:', error)
     // Use placeholder images
     photos.value = Array(5).fill(null).map(() => ({
-      images: ['/images/placeholder.jpg'],
-      currentImage: '/images/placeholder.jpg',
+      images: ['/hsl-logo.png'],
+      currentImage: '/hsl-logo.png',
       currentIndex: 0
     }))
   }
@@ -89,16 +100,31 @@ const startRotations = () => {
 
     setTimeout(() => {
       const intervalId = window.setInterval(() => {
-        const img = document.querySelector(`.photo-${index + 1} img`) as HTMLImageElement
-        if (img) {
-          img.style.opacity = '0'
+        const container = document.querySelector(`.photo-${index + 1}`)
+        const currentImg = container?.querySelector('.photo-current') as HTMLImageElement
+        const nextImg = container?.querySelector('.photo-next') as HTMLImageElement
 
-          setTimeout(() => {
-            photo.currentIndex = (photo.currentIndex + 1) % photo.images.length
-            photo.currentImage = photo.images[photo.currentIndex]
-            img.src = photo.currentImage
-            img.style.opacity = '1'
-          }, 400)
+        if (currentImg && nextImg) {
+          const nextIndex = (photo.currentIndex + 1) % photo.images.length
+          const nextSrc = photo.images[nextIndex]
+
+          // Set next image src and wait for load
+          nextImg.onload = () => {
+            // Fade in the next image on top
+            nextImg.style.visibility = 'visible'
+            nextImg.style.opacity = '1'
+
+            // After transition, update current and reset next
+            setTimeout(() => {
+              photo.currentIndex = nextIndex
+              photo.currentImage = nextSrc
+              currentImg.src = nextSrc
+              nextImg.style.opacity = '0'
+              nextImg.style.visibility = 'hidden'
+            }, 500)
+          }
+
+          nextImg.src = nextSrc
         }
       }, 4500 + (index * 400))
 
@@ -145,13 +171,33 @@ onUnmounted(() => {
   box-shadow: 6px 6px 20px var(--shadow-medium);
 }
 
+.photo-stack {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
 .photo img {
   display: block;
   width: 100%;
   height: 100%;
   object-fit: cover;
   filter: saturate(0.9) contrast(1.02);
-  transition: opacity 0.4s ease;
+}
+
+.photo-current {
+  position: relative;
+  z-index: 1;
+}
+
+.photo-next {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 2;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.5s ease, visibility 0.5s ease;
 }
 
 .photo.torn-top img {

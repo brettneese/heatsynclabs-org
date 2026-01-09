@@ -1,7 +1,12 @@
 <template>
   <BaseCard padding="lg" class="schedule">
     <div class="schedule__header">
-      <h2 class="schedule__title">Open Hours</h2>
+      <div class="schedule__header-content">
+        <h2 class="schedule__title">Open Hours</h2>
+        <p class="schedule__description">
+          Open hours are times when the lab is open to the public. Stop in, get a tour, meet us, and even work on your projects! Card members get 24/7 access to the space.
+        </p>
+      </div>
       <DoorStatus />
     </div>
 
@@ -43,15 +48,15 @@ const calendarService = new CalendarService()
 // Force reactive updates
 const scheduleVersion = ref(0)
 
-// Default schedule as fallback - all days show Cardmembers 24/7 when no Open Hours events found
+// Default schedule as fallback - all days show Card members 24/7 when no Open Hours events found
 const defaultSchedule: ScheduleDay[] = [
-  { name: 'SUNDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 0 },
-  { name: 'MONDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 1 },
-  { name: 'TUESDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 2 },
-  { name: 'WEDNESDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 3 },
-  { name: 'THURSDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 4 },
-  { name: 'FRIDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 5 },
-  { name: 'SATURDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 6 },
+  { name: 'SUNDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 0 },
+  { name: 'MONDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 1 },
+  { name: 'TUESDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 2 },
+  { name: 'WEDNESDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 3 },
+  { name: 'THURSDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 4 },
+  { name: 'FRIDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 5 },
+  { name: 'SATURDAY', hours: 'Card members 24/7', isOpen: false, dayOfWeek: 6 },
 ]
 
 const weeklySchedule = computed(() => {
@@ -91,7 +96,7 @@ const weeklySchedule = computed(() => {
       const defaultDay = defaultSchedule.find(d => d.dayOfWeek === dayOfWeek)
       schedule.push({
         name: dayName!,
-        hours: defaultDay?.hours || 'Cardmembers 24/7',
+        hours: defaultDay?.hours || 'Card members 24/7',
         isOpen: defaultDay?.isOpen || false,
         dayOfWeek: dayOfWeek
       })
@@ -132,8 +137,13 @@ onMounted(() => {
 .schedule__header {
   display: flex;
   justify-content: space-between;
-  align-items: center;
+  align-items: flex-start;
   margin-bottom: var(--space-8);
+}
+
+.schedule__header-content {
+  flex: 1;
+  max-width: 70%;
 }
 
 .schedule__title {
@@ -142,6 +152,15 @@ onMounted(() => {
   font-family: var(--font-mono);
   color: var(--ink-black);
   margin: 0;
+}
+
+.schedule__description {
+  font-family: var(--font-sans);
+  font-size: var(--text-base);
+  color: var(--graphite);
+  line-height: var(--leading-relaxed);
+  margin: var(--space-4) 0 0 0;
+  text-align: left;
 }
 
 .schedule__loading {
@@ -205,8 +224,16 @@ onMounted(() => {
     align-items: center;
   }
 
+  .schedule__header-content {
+    max-width: 100%;
+  }
+
   .schedule__title {
     font-size: var(--text-2xl);
+  }
+
+  .schedule__description {
+    text-align: center;
   }
 
   .schedule__grid {

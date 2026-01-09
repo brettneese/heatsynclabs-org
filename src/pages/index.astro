@@ -2,7 +2,6 @@
 export const prerender = true;
 import Layout from '../layouts/Layout.astro';
 import HeroSection from '../components/sections/HeroSection.astro';
-import WelcomeSection from '../components/sections/WelcomeSection.astro';
 import InfoSection from '../components/sections/InfoSection.astro';
 import ScheduleSection from '../components/sections/ScheduleSection.astro';
 import CalendarSection from '../components/sections/CalendarSection.astro';
@@ -12,10 +11,9 @@ import SupportSection from '../components/sections/SupportSection.astro';
 <Layout title="HeatSync Labs - Arizona's Community Hackerspace">
   <div class="home">
     <HeroSection />
-    <WelcomeSection />
+    <CalendarSection />
     <InfoSection />
     <ScheduleSection />
-    <CalendarSection />
     <SupportSection />
   </div>
 </Layout>

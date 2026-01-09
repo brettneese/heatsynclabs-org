@@ -89,14 +89,14 @@ onMounted(() => {
 
 <style scoped>
 .calendar-section {
-  padding: var(--space-12) 0;
+  padding: var(--space-6) 0 var(--space-2) 0;
   background: var(--paper-white);
 }
 
 .calendar__title {
-  font-size: var(--text-3xl);
+  font-size: var(--text-2xl);
   font-weight: var(--font-normal);
-  margin-bottom: var(--space-8);
+  margin-bottom: var(--space-4);
   text-align: center;
   color: var(--ink-black);
 }
@@ -147,15 +147,15 @@ onMounted(() => {
 
 .calendar__footer {
   text-align: center;
-  margin-top: var(--space-8);
-  padding-top: var(--space-6);
+  margin-top: var(--space-4);
+  padding-top: var(--space-4);
   border-top: 1px solid rgba(107, 104, 102, 0.2);
 }
 
 /* Responsive */
 @media (max-width: 768px) {
   .calendar-section {
-    padding: var(--space-16) 0;
+    padding: var(--space-12) 0;
   }
 
   .calendar__event {
