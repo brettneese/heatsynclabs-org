@@ -3,10 +3,6 @@ title: "About HeatSync Labs"
 description: "Arizona's premier community-operated hackerspace, fostering innovation and collaboration since 2009"
 ---
 
-# About HeatSync Labs
-
-Arizona's premier community-operated hackerspace, fostering innovation and collaboration since 2009.
-
 ## Our Story
 
 HeatSync Labs began as a grassroots effort to create a collaborative workspace where makers, artists, and technologists could come together to create, learn, and share knowledge. What started as a small group of passionate individuals has grown into the region's leading community hackerspace.
@@ -16,6 +12,22 @@ As a 501(c)3 non-profit organization, we're member-owned and operated, ensuring 
 ## Our Mission
 
 To provide an open, inclusive environment where creativity and technical education thrive. We believe in the power of community-driven learning and the importance of hands-on experience in developing both technical skills and innovative thinking.
+
+## Our Philosophy
+
+HeatSync Labs is Arizona's first hackerspace, built on open source principles: access for everyone, knowledge shared freely, and the belief that making things shouldn't require permission or pedigree. We've been volunteer-run since 2009.
+
+We're a do-ocracy. Show up, make things, contribute back. The same ethos that makes open source work makes this space work: collaboration over gatekeeping, and no tolerance for people who break the build for everyone else.
+
+## Community Standards
+
+We're a community space for learning, building, and making things together. **Everyone is welcome.**
+
+We actively support a diverse community. This includes, but is not limited to, LGBTQ+ makers, women and nonbinary folks, makers of color, people with disabilities, neurodivergent people, beginners, and first-time makers.
+
+All that's expected is curiosity, respect for others, and a willingness to build together.
+
+For more details, see our [Community Standards](https://wiki.heatsynclabs.org/wiki/Bylaws#Unacceptable_Behavior).
 
 ## Visit Us
 
