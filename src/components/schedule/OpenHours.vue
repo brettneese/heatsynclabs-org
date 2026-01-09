@@ -43,15 +43,15 @@ const calendarService = new CalendarService()
 // Force reactive updates
 const scheduleVersion = ref(0)
 
-// Default schedule as fallback - all days show Members 24/7 when no Open Hours events found
+// Default schedule as fallback - all days show Cardmembers 24/7 when no Open Hours events found
 const defaultSchedule: ScheduleDay[] = [
-  { name: 'SUNDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 0 },
-  { name: 'MONDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 1 },
-  { name: 'TUESDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 2 },
-  { name: 'WEDNESDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 3 },
-  { name: 'THURSDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 4 },
-  { name: 'FRIDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 5 },
-  { name: 'SATURDAY', hours: 'Members 24/7', isOpen: false, dayOfWeek: 6 },
+  { name: 'SUNDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 0 },
+  { name: 'MONDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 1 },
+  { name: 'TUESDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 2 },
+  { name: 'WEDNESDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 3 },
+  { name: 'THURSDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 4 },
+  { name: 'FRIDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 5 },
+  { name: 'SATURDAY', hours: 'Cardmembers 24/7', isOpen: false, dayOfWeek: 6 },
 ]
 
 const weeklySchedule = computed(() => {
@@ -91,7 +91,7 @@ const weeklySchedule = computed(() => {
       const defaultDay = defaultSchedule.find(d => d.dayOfWeek === dayOfWeek)
       schedule.push({
         name: dayName!,
-        hours: defaultDay?.hours || 'Members 24/7',
+        hours: defaultDay?.hours || 'Cardmembers 24/7',
         isOpen: defaultDay?.isOpen || false,
         dayOfWeek: dayOfWeek
       })
