@@ -2,12 +2,24 @@
 import BaseContainer from '../base/BaseContainer.astro';
 import BaseButton from '../base/BaseButton.astro';
 import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
+import LabStatusIndicator from '../layout/LabStatusIndicator.vue';
 ---
 
 <section class="hero">
   <BaseContainer>
     <div class="hero__wrapper">
       <div class="hero__content">
+        <!-- Prominent Hero Logo -->
+        <a href="/" class="hero__logo" id="hero-logo">
+          <img src="/hsl-logo.png" alt="HeatSync Labs" class="hero__logo-mark" />
+          <span class="hero__logo-text">HeatSync Labs</span>
+        </a>
+
+        <!-- Status indicator below logo -->
+        <div class="hero__status" id="hero-status">
+          <LabStatusIndicator client:load />
+        </div>
+
         <span class="hero__label">
           <a href="https://maps.app.goo.gl/Qh3wZuQuik4U7niE6" target="_blank" rel="noopener">
             <svg viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/></svg>
@@ -26,7 +38,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
         </p>
 
         <p class="hero__pitch">
-          We're a <strong>community workshop</strong>, not a business. Show up with an idea, a broken gadget, or just curiosity. We've got the tools and people who want to help.
+          We're a <strong>community workshop</strong>, not a business. Show up with an idea, a broken gadget, or just curiosity. We've got the tools and people who want to help. <a href="/about" class="welcome-link"><strong style="color: var(--color-accent-primary);">And everyone is welcome.</strong></a>
         </p>
 
         <div class="hero__actions">
@@ -76,12 +88,143 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
 </section>
 
 
+<script>
+  // Hero logo scroll animation
+  (() => {
+    const heroLogo = document.getElementById('hero-logo');
+    const heroStatus = document.getElementById('hero-status');
+    const headerLogo = document.querySelector('.nav__logo');
+
+    // Only run on pages with hero logo
+    if (!heroLogo || !headerLogo) return;
+
+    // Get the header logo element inside the anchor
+    const headerLogoInner = headerLogo.querySelector('.logo');
+    if (!headerLogoInner) return;
+
+    let isScrolled = false;
+    const scrollThreshold = 150; // pixels to scroll before logo transitions
+
+    const updateLogoState = () => {
+      const scrollY = window.scrollY;
+      const shouldBeScrolled = scrollY > scrollThreshold;
+
+      if (shouldBeScrolled !== isScrolled) {
+        isScrolled = shouldBeScrolled;
+
+        if (isScrolled) {
+          // Scrolled: Logo in header, hero status hidden
+          heroLogo.classList.add('hero__logo--hidden');
+          if (heroStatus) heroStatus.classList.add('hero__status--hidden');
+          headerLogoInner.classList.add('logo--visible');
+          headerLogoInner.classList.remove('logo--hidden');
+        } else {
+          // At top: Logo in hero, hero status visible
+          heroLogo.classList.remove('hero__logo--hidden');
+          if (heroStatus) heroStatus.classList.remove('hero__status--hidden');
+          headerLogoInner.classList.add('logo--hidden');
+          headerLogoInner.classList.remove('logo--visible');
+        }
+      }
+    };
+
+    // Initial state - hide header logo
+    headerLogoInner.classList.add('logo--hidden');
+
+    // Listen for scroll with throttling
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          updateLogoState();
+          ticking = false;
+        });
+        ticking = true;
+      }
+    }, { passive: true });
+
+    // Initial check in case page loaded already scrolled
+    updateLogoState();
+  })();
+</script>
+
 <style>
+  /* Hero Logo Styles */
+  .hero__logo {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+    text-decoration: none;
+    color: var(--color-text-primary);
+    margin-bottom: var(--space-6);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    transform-origin: top left;
+  }
+
+  .hero__logo:hover {
+    color: var(--color-accent-primary);
+  }
+
+  .hero__logo:hover .hero__logo-mark {
+    transform: rotate(72deg);
+  }
+
+  .hero__logo-mark {
+    width: 80px;
+    height: 80px;
+    object-fit: contain;
+    transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero__logo-text {
+    font-family: var(--font-serif);
+    font-size: clamp(36px, 5vw, 44px);
+    font-weight: var(--font-semibold);
+    letter-spacing: var(--tracking-tight);
+    white-space: nowrap;
+  }
+
+  /* Hidden state for hero logo when scrolled */
+  .hero__logo--hidden {
+    opacity: 0;
+    transform: translateY(-60px) scale(0.5);
+    pointer-events: none;
+  }
+
+  /* Hero status indicator */
+  .hero__status {
+    margin-bottom: var(--space-4);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .hero__status--hidden {
+    opacity: 0;
+    transform: translateY(-20px);
+    pointer-events: none;
+  }
+
+  /* Mobile adjustments for hero logo */
+  @media (max-width: 900px) {
+    .hero__logo {
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 600px) {
+    .hero__logo-mark {
+      width: 56px;
+      height: 56px;
+    }
+
+    .hero__logo-text {
+      font-size: 28px;
+    }
+  }
+
   .hero {
-    padding: var(--space-32) 0 var(--space-16);
+    padding: var(--space-6) 0 var(--space-8);
     position: relative;
     overflow: hidden;
-    min-height: calc(100vh - var(--header-height));
     display: flex;
     align-items: center;
     background: var(--color-bg-primary);
@@ -174,7 +317,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     font-size: clamp(28px, 4.5vw, 48px);
     font-weight: var(--font-light);
     line-height: 1.1;
-    margin-bottom: var(--space-2);
+    margin-bottom: var(--space-1);
     letter-spacing: var(--tracking-tight);
     font-family: var(--font-sans);
   }
@@ -203,7 +346,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     font-size: var(--text-base);
     color: var(--color-text-tertiary);
     font-weight: var(--font-normal);
-    margin-bottom: var(--space-5);
+    margin-bottom: var(--space-3);
     line-height: 1.5;
     font-family: var(--font-sans);
   }
@@ -212,7 +355,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     font-size: 15px;
     line-height: 1.7;
     color: var(--color-text-tertiary);
-    margin-bottom: var(--space-8);
+    margin-bottom: var(--space-6);
     font-family: var(--font-sans);
   }
 
@@ -221,12 +364,21 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
     font-weight: var(--font-semibold);
   }
 
+  .welcome-link {
+    text-decoration: none;
+    transition: opacity 0.2s ease;
+  }
+
+  .welcome-link:hover {
+    opacity: 0.8;
+  }
+
   .hero__actions {
     display: flex;
     gap: var(--space-4);
     flex-wrap: wrap;
     align-items: center;
-    margin-bottom: var(--space-10);
+    margin-bottom: var(--space-6);
   }
 
   /* Stats row */
@@ -263,7 +415,7 @@ import PhotoCollage from '../graphics/HeroPhotoCollage.vue';
   .collage-wrapper {
     position: relative;
     height: 100%;
-    min-height: 500px;
+    min-height: 400px;
   }
 
   .collage-backdrop {

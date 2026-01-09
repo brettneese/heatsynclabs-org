@@ -30,7 +30,7 @@ const logoClasses = [
     letter-spacing: var(--tracking-tight);
     color: var(--color-text-primary);
     text-decoration: none;
-    transition: all var(--transition-base);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
   }
 
   .logo__mark {
@@ -95,6 +95,18 @@ const logoClasses = [
 
   .logo--text-only .logo__mark {
     display: none;
+  }
+
+  /* Scroll animation states */
+  .logo--hidden {
+    opacity: 0;
+    transform: translateY(-20px) scale(0.8);
+    pointer-events: none;
+  }
+
+  .logo--visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 </style>
 
