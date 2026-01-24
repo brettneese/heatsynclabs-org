@@ -212,9 +212,13 @@ import LabStatusIndicator from '../layout/LabStatusIndicator.vue';
   }
 
   @media (max-width: 768px) {
-    .hero__logo,
-    .hero__status {
+    .hero__logo {
       display: none;
+    }
+
+    .hero__status {
+      display: flex;
+      justify-content: center;
     }
   }
 
